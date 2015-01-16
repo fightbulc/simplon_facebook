@@ -10,7 +10,7 @@ session_start();
 
 $facebookAuthVo = (new \Simplon\Facebook\Core\Vo\FacebookAuthVo())
     ->setAppId('690542844393444')
-    ->setAppSecret('c43b7f65e851a33fd20c8a6485115652');
+    ->setAppSecret('XXX');
 
 $facebook = new \Simplon\Facebook\Core\Facebook($facebookAuthVo);
 

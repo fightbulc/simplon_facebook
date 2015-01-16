@@ -19,8 +19,8 @@
     "require": {
         "php": ">=5.4",
         "fightbulc/moment": "1.6.*",
-        "simplon/request": "0.1.*",
-        "simplon/helper": "0.7.*"
+        "simplon/request": "0.2.*",
+        "simplon/helper": "0.8.*"
     },
     "autoload": {
         "psr-4": {

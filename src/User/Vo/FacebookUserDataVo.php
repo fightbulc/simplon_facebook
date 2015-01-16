@@ -14,7 +14,7 @@ class FacebookUserDataVo
     /**
      * @var array
      */
-    private $rawData;
+    private $data;
 
     /**
      * @var string
@@ -89,6 +89,7 @@ class FacebookUserDataVo
     public function setData(array $data)
     {
         (new DataSetter())
+            ->assignField('access_token', function ($val) { $this->setAccessToken($val); })
             ->assignField('id', function ($val) { $this->setId($val); })
             ->assignField('username', function ($val) { $this->setUsername($val); })
             ->assignField('first_name', function ($val) { $this->setFirstName($val); })
@@ -111,9 +112,9 @@ class FacebookUserDataVo
     /**
      * @return array
      */
-    public function getRawData()
+    public function toArray()
     {
-        return (array)$this->rawData;
+        return (array)$this->data;
     }
 
     /**
@@ -124,6 +125,9 @@ class FacebookUserDataVo
     public function setAccessToken($accessToken)
     {
         $this->accessToken = $accessToken;
+
+        // cache in raw data
+        $this->data['access_token'] = $accessToken;
 
         return $this;
     }
@@ -391,7 +395,7 @@ class FacebookUserDataVo
      */
     private function setRawData($rawData)
     {
-        $this->rawData = $rawData;
+        $this->data = $rawData;
 
         return $this;
     }
