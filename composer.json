@@ -1,30 +1,30 @@
 {
-    "name": "simplon/facebook",
-    "description": "Facebook Library",
-    "homepage": "https://github.com/fightbulc/simplon_facebook",
-    "type": "library",
-    "keywords": [
-        "facebook",
-        "api",
-        "http"
-    ],
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "Tino Ehrich",
-            "email": "tino@bigpun.me",
-            "role": "developer"
-        }
-    ],
-    "require": {
-        "php": ">=5.4",
-        "fightbulc/moment": "1.6.*",
-        "simplon/request": "0.2.*",
-        "simplon/helper": "0.8.*"
-    },
-    "autoload": {
-        "psr-4": {
-            "Simplon\\Facebook\\": "src/"
-        }
+  "name": "simplon/facebook",
+  "description": "Facebook Library",
+  "homepage": "https://github.com/fightbulc/simplon_facebook",
+  "type": "library",
+  "keywords": [
+    "facebook",
+    "api",
+    "http"
+  ],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Tino Ehrich",
+      "email": "tino@bigpun.me",
+      "role": "developer"
     }
+  ],
+  "require": {
+    "php": ">=5.4",
+    "simplon/request": "0.2.*",
+    "simplon/helper": "0.8.*",
+    "fightbulc/moment": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "Simplon\\Facebook\\": "src/"
+    }
+  }
 }
