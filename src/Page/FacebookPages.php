@@ -2,29 +2,29 @@
 
 namespace Simplon\Facebook\Page;
 
-use Simplon\Facebook\Core\Facebook;
 use Simplon\Facebook\Core\FacebookConstants;
 use Simplon\Facebook\Core\FacebookRequests;
 use Simplon\Facebook\Page\Vo\FacebookPageVo;
+use Simplon\Facebook\Post\FacebookPosts;
 
 /**
  * FacebookPages
  * @package Simplon\Facebook\Page
- * @author Tino Ehrich (tino@bigpun.me)
+ * @author  Tino Ehrich (tino@bigpun.me)
  */
 class FacebookPages
 {
     /**
-     * @var Facebook
+     * @var FacebookPosts
      */
-    private $facebook;
+    private $facebookPosts;
 
     /**
-     * @param Facebook $facebook
+     * @param FacebookPosts $facebookPosts
      */
-    public function __construct(Facebook $facebook)
+    public function __construct(FacebookPosts $facebookPosts)
     {
-        $this->facebook = $facebook;
+        $this->facebookPosts = $facebookPosts;
     }
 
     /**
@@ -45,28 +45,51 @@ class FacebookPages
             'access_token' => $pageAccessToken,
         ];
 
-        $urlPageData = str_replace('{{pageIdentifier}}', $urlname, FacebookConstants::PATH_PAGE_DATA);
-
-        $response = FacebookRequests::read($urlPageData, $params);
+        $response = FacebookRequests::read(
+            str_replace('{{pageId}}', $urlname, FacebookConstants::PATH_PAGE_DATA),
+            $params
+        );
 
         return (new FacebookPageVo())->setData($response);
     }
 
     /**
-     * @return Facebook
+     * @param string $pageAccessToken
+     * @param string $pageId
+     * @param string $message
+     *
+     * @return null|string
      */
-    private function getFacebook()
+    public function feedPublish($pageAccessToken, $pageId, $message)
     {
-        return $this->facebook;
+        $path = FacebookRequests::renderPath(
+            FacebookConstants::PATH_PAGE_FEED,
+            ['pageId' => $pageId]
+        );
+
+        return $this
+            ->getFacebookPosts()
+            ->feedPublish($path, $pageAccessToken, $message);
     }
 
     /**
-     * @return string
+     * @param string $pageAccessToken
+     * @param string $postId
+     *
+     * @return bool|null
      */
-    private function getAccessToken()
+    public function feedRemove($pageAccessToken, $postId)
     {
         return $this
-            ->getFacebook()
-            ->getUserLongTermAccessToken();
+            ->getFacebookPosts()
+            ->feedRemove($pageAccessToken, $postId);
+    }
+
+    /**
+     * @return FacebookPosts
+     */
+    private function getFacebookPosts()
+    {
+        return $this->facebookPosts;
     }
 }

@@ -6,6 +6,7 @@ use Simplon\Facebook\Core\Facebook;
 use Simplon\Facebook\Core\FacebookConstants;
 use Simplon\Facebook\Core\FacebookErrorException;
 use Simplon\Facebook\Core\FacebookRequests;
+use Simplon\Facebook\Post\FacebookPosts;
 use Simplon\Facebook\User\Vo\FacebookUserAccountVo;
 use Simplon\Facebook\User\Vo\FacebookUserDataVo;
 use Simplon\Facebook\User\Vo\FacebookUserFriendVo;
@@ -13,7 +14,7 @@ use Simplon\Facebook\User\Vo\FacebookUserFriendVo;
 /**
  * FacebookUsers
  * @package Simplon\Facebook\User
- * @author Tino Ehrich (tino@bigpun.me)
+ * @author  Tino Ehrich (tino@bigpun.me)
  */
 class FacebookUsers
 {
@@ -23,11 +24,18 @@ class FacebookUsers
     private $facebook;
 
     /**
-     * @param Facebook $facebook
+     * @var FacebookPosts
      */
-    public function __construct(Facebook $facebook)
+    private $facebookPosts;
+
+    /**
+     * @param Facebook      $facebook
+     * @param FacebookPosts $facebookPosts
+     */
+    public function __construct(Facebook $facebook, FacebookPosts $facebookPosts)
     {
         $this->facebook = $facebook;
+        $this->facebookPosts = $facebookPosts;
     }
 
     /**
@@ -128,7 +136,7 @@ class FacebookUsers
 
             foreach ($response['data'] as $val)
             {
-                $voMany[] = (new FacebookUserAccountVo())->setData($val);
+                $voMany[] = (new FacebookUserAccountVo())->fromArray($val);
             }
 
             return $voMany;
@@ -211,11 +219,45 @@ class FacebookUsers
     }
 
     /**
+     * @param string $userAccessToken
+     * @param string $message
+     *
+     * @return null|string
+     */
+    public function feedPublish($userAccessToken, $message)
+    {
+        return $this
+            ->getFacebookPosts()
+            ->feedPublish(FacebookConstants::PATH_ME_FEED, $userAccessToken, $message);
+    }
+
+    /**
+     * @param string $userAccessToken
+     * @param string $postId
+     *
+     * @return bool|null
+     */
+    public function feedRemove($userAccessToken, $postId)
+    {
+        return $this
+            ->getFacebookPosts()
+            ->feedRemove($userAccessToken, $postId);
+    }
+
+    /**
      * @return Facebook
      */
     private function getFacebook()
     {
         return $this->facebook;
+    }
+
+    /**
+     * @return FacebookPosts
+     */
+    private function getFacebookPosts()
+    {
+        return $this->facebookPosts;
     }
 
     /**

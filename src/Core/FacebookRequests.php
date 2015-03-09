@@ -8,13 +8,13 @@ use Simplon\Request\RequestResponse;
 /**
  * FacebookRequests
  * @package Simplon\Facebook\Core
- * @author Tino Ehrich (tino@bigpun.me)
+ * @author  Tino Ehrich (tino@bigpun.me)
  */
 class FacebookRequests
 {
     /**
      * @param string $url
-     * @param array $requestParams
+     * @param array  $requestParams
      *
      * @return array
      */
@@ -27,7 +27,7 @@ class FacebookRequests
 
     /**
      * @param string $url
-     * @param array $requestParams
+     * @param array  $requestParams
      *
      * @return array
      */
@@ -40,8 +40,21 @@ class FacebookRequests
 
     /**
      * @param string $url
+     * @param array  $requestParams
+     *
+     * @return array
+     */
+    public static function delete($url, array $requestParams = [])
+    {
+        return self::handleResponse(
+            Request::delete($url, $requestParams)
+        );
+    }
+
+    /**
+     * @param string $url
      * @param string $path
-     * @param array $getParams
+     * @param array  $getParams
      *
      * @return string
      */
@@ -59,7 +72,7 @@ class FacebookRequests
 
     /**
      * @param string $path
-     * @param array $pathParams
+     * @param array  $pathParams
      *
      * @return mixed|string
      */

@@ -2,63 +2,48 @@
 
 namespace Simplon\Facebook\User\Vo;
 
-use Simplon\Helper\DataSetter;
+use Simplon\Helper\DataIoVoTrait;
 
 /**
  * FacebookUserAccountVo
  * @package Simplon\Facebook\User\Vo
- * @author Tino Ehrich (tino@bigpun.me)
+ * @author  Tino Ehrich (tino@bigpun.me)
  */
 class FacebookUserAccountVo
 {
+    use DataIoVoTrait;
+
+    const PERM_ADMINISTER = 'ADMINISTER';
+
     /**
      * @var string
      */
-    private $id;
+    protected $id;
 
     /**
      * @var array
      */
-    private $perms;
+    protected $perms;
 
     /**
      * @var string
      */
-    private $accessToken;
+    protected $accessToken;
 
     /**
      * @var string
      */
-    private $name;
+    protected $name;
 
     /**
      * @var string
      */
-    private $category;
+    protected $category;
 
     /**
      * @var array
      */
-    private $categoryList;
-
-    /**
-     * @param array $data
-     *
-     * @return FacebookUserAccountVo
-     */
-    public function setData(array $data)
-    {
-        (new DataSetter())
-            ->assignField('id', function ($val) { $this->setId($val); })
-            ->assignField('perms', function ($val) { $this->setPerms($val); })
-            ->assignField('access_token', function ($val) { $this->setAccessToken($val); })
-            ->assignField('name', function ($val) { $this->setName($val); })
-            ->assignField('category', function ($val) { $this->setCategory($val); })
-            ->assignField('category_list', function ($val) { $this->setCategoryList($val); })
-            ->applyOn($data);
-
-        return $this;
-    }
+    protected $categoryList;
 
     /**
      * @param string $accessToken
@@ -149,7 +134,7 @@ class FacebookUserAccountVo
 
         foreach ($categoryList as $val)
         {
-            $voMany[] = (new FacebookUserAcountCategoryListVo())->setData($val);
+            $voMany[] = (new FacebookUserAcountCategoryListVo())->fromArray($val);
         }
 
         return $voMany;
@@ -213,5 +198,17 @@ class FacebookUserAccountVo
     public function getPerms()
     {
         return (array)$this->perms;
+    }
+
+    /**
+     * @param array $hasPerms
+     *
+     * @return bool
+     */
+    public function hasPerms(array $hasPerms)
+    {
+        $result = array_intersect($this->getPerms(), $hasPerms);
+
+        return count($result) === count($hasPerms);
     }
 }

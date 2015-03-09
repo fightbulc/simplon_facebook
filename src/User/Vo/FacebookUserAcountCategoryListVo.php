@@ -2,39 +2,26 @@
 
 namespace Simplon\Facebook\User\Vo;
 
-use Simplon\Helper\DataSetter;
+use Simplon\Helper\DataIoVoTrait;
 
 /**
  * FacebookUserAcountCategoryListVo
  * @package Simplon\Facebook\User\Vo
- * @author Tino Ehrich (tino@bigpun.me)
+ * @author  Tino Ehrich (tino@bigpun.me)
  */
 class FacebookUserAcountCategoryListVo
 {
-    /**
-     * @var string
-     */
-    private $id;
+    use DataIoVoTrait;
 
     /**
      * @var string
      */
-    private $name;
+    protected $id;
 
     /**
-     * @param array $data
-     *
-     * @return FacebookUserAcountCategoryListVo
+     * @var string
      */
-    public function setData(array $data)
-    {
-        (new DataSetter())
-            ->assignField('id', function ($val) { $this->setId($val); })
-            ->assignField('name', function ($val) { $this->setName($val); })
-            ->applyOn($data);
-
-        return $this;
-    }
+    protected $name;
 
     /**
      * @param string $id

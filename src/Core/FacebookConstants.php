@@ -5,7 +5,7 @@ namespace Simplon\Facebook\Core;
 /**
  * FacebookConstants
  * @package Simplon\Facebook\Core
- * @author Tino Ehrich (tino@bigpun.me)
+ * @author  Tino Ehrich (tino@bigpun.me)
  */
 class FacebookConstants
 {
@@ -45,9 +45,12 @@ class FacebookConstants
     const PATH_ME = '/me';
     const PATH_ME_FRIENDS = '/me/friends';
     const PATH_ME_ACCOUNTS = '/me/accounts';
+    const PATH_ME_FEED = '/me/feed';
     const PATH_OPEN_GRAPH_CREATE = '/me/{{actionType}}';
     const PATH_OPEN_GRAPH_DATA = '/{{itemId}}';
-    const PATH_PAGE_DATA = '/{{pageIdentifier}}';
+    const PATH_PAGE_DATA = '/{{pageId}}';
+    const PATH_PAGE_FEED = '/{{pageId}}/feed';
+    const PATH_POST = '/{{postId}}';
     const PATH_EVENT_DATA = '/{{eventId}}';
     const PATH_EVENT_CREATE = '/{{ownerIdentifier}}/events';
 
