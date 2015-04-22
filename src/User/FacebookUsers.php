@@ -243,13 +243,13 @@ class FacebookUsers
      * @param string      $message
      * @param null|string $link
      *
-     * @return null|string
+     * @return bool
      */
     public function feedUpdate($userAccessToken, $postId, $message, $link = null)
     {
         return $this
             ->getFacebookPosts()
-            ->feedPublish($userAccessToken, $postId, $message, $link);
+            ->feedUpdate($userAccessToken, $postId, $message, $link);
     }
 
     /**

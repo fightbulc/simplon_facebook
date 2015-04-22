@@ -79,13 +79,13 @@ class FacebookPages
      * @param string      $message
      * @param null|string $link
      *
-     * @return null|string
+     * @return bool
      */
     public function feedUpdate($pageAccessToken, $postId, $message, $link = null)
     {
         return $this
             ->getFacebookPosts()
-            ->feedPublish($pageAccessToken, $postId, $message, $link);
+            ->feedUpdate($pageAccessToken, $postId, $message, $link);
     }
 
     /**
