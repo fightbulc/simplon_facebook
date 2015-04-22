@@ -219,16 +219,37 @@ class FacebookUsers
     }
 
     /**
-     * @param string $userAccessToken
-     * @param string $message
+     * @param string      $userAccessToken
+     * @param string      $message
+     * @param null|string $link
      *
      * @return null|string
      */
-    public function feedPublish($userAccessToken, $message)
+    public function feedPublish($userAccessToken, $message, $link = null)
     {
         return $this
             ->getFacebookPosts()
-            ->feedPublish(FacebookConstants::PATH_ME_FEED, $userAccessToken, $message);
+            ->feedPublish(
+                FacebookConstants::PATH_ME_FEED,
+                $userAccessToken,
+                $message,
+                $link
+            );
+    }
+
+    /**
+     * @param string      $userAccessToken
+     * @param string      $postId
+     * @param string      $message
+     * @param null|string $link
+     *
+     * @return null|string
+     */
+    public function feedUpdate($userAccessToken, $postId, $message, $link = null)
+    {
+        return $this
+            ->getFacebookPosts()
+            ->feedPublish($userAccessToken, $postId, $message, $link);
     }
 
     /**

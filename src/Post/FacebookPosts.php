@@ -13,13 +13,14 @@ use Simplon\Facebook\Core\FacebookRequests;
 class FacebookPosts
 {
     /**
-     * @param string $path
-     * @param string $accessToken
-     * @param string $message
+     * @param string      $path
+     * @param string      $accessToken
+     * @param string      $message
+     * @param null|string $link
      *
      * @return null|string
      */
-    public function feedPublish($path, $accessToken, $message)
+    public function feedPublish($path, $accessToken, $message, $link = null)
     {
         $url = FacebookRequests::renderUrl(
             FacebookConstants::URL_DOMAIN_GRAPH,
@@ -27,7 +28,7 @@ class FacebookPosts
             ['access_token' => $accessToken]
         );
 
-        $response = FacebookRequests::publish($url, ['message' => $message]);
+        $response = FacebookRequests::publish($url, ['message' => $message, 'link' => $link]);
 
         if (isset($response['id']) === false)
         {
@@ -37,6 +38,27 @@ class FacebookPosts
         // --------------------------------------
 
         return (string)$response['id'];
+    }
+
+    /**
+     * @param string      $accessToken
+     * @param string      $postId
+     * @param string      $message
+     * @param null|string $link
+     *
+     * @return bool
+     */
+    public function feedUpdate($accessToken, $postId, $message, $link = null)
+    {
+        $url = FacebookRequests::renderUrl(
+            FacebookConstants::URL_DOMAIN_GRAPH,
+            FacebookRequests::renderPath(FacebookConstants::PATH_POST, ['postId' => $postId]),
+            ['access_token' => $accessToken]
+        );
+
+        $response = FacebookRequests::publish($url, ['message' => $message, 'link' => $link]);
+
+        return (bool)$response['success'];
     }
 
     /**

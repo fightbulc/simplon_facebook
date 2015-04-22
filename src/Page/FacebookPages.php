@@ -54,13 +54,14 @@ class FacebookPages
     }
 
     /**
-     * @param string $pageAccessToken
-     * @param string $pageId
-     * @param string $message
+     * @param string      $pageAccessToken
+     * @param string      $pageId
+     * @param string      $message
+     * @param null|string $link
      *
      * @return null|string
      */
-    public function feedPublish($pageAccessToken, $pageId, $message)
+    public function feedPublish($pageAccessToken, $pageId, $message, $link = null)
     {
         $path = FacebookRequests::renderPath(
             FacebookConstants::PATH_PAGE_FEED,
@@ -69,7 +70,22 @@ class FacebookPages
 
         return $this
             ->getFacebookPosts()
-            ->feedPublish($path, $pageAccessToken, $message);
+            ->feedPublish($path, $pageAccessToken, $message, $link);
+    }
+
+    /**
+     * @param string      $pageAccessToken
+     * @param string      $postId
+     * @param string      $message
+     * @param null|string $link
+     *
+     * @return null|string
+     */
+    public function feedUpdate($pageAccessToken, $postId, $message, $link = null)
+    {
+        return $this
+            ->getFacebookPosts()
+            ->feedPublish($pageAccessToken, $postId, $message, $link);
     }
 
     /**
