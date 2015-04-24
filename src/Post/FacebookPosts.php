@@ -28,7 +28,16 @@ class FacebookPosts
             ['access_token' => $accessToken]
         );
 
-        $response = FacebookRequests::publish($url, ['message' => $message, 'link' => $link]);
+        // message params
+        $params = ['message' => $message];
+
+        // add link if available
+        if ($link !== null)
+        {
+            $params['link'] = $link;
+        }
+
+        $response = FacebookRequests::publish($url, $params);
 
         if (isset($response['id']) === false)
         {
@@ -56,7 +65,16 @@ class FacebookPosts
             ['access_token' => $accessToken]
         );
 
-        $response = FacebookRequests::publish($url, ['message' => $message, 'link' => $link]);
+        // message params
+        $params = ['message' => $message];
+
+        // add link if available
+        if ($link !== null)
+        {
+            $params['link'] = $link;
+        }
+
+        $response = FacebookRequests::publish($url, $params);
 
         return (bool)$response['success'];
     }
