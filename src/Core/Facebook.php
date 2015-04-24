@@ -4,12 +4,11 @@ namespace Simplon\Facebook\Core;
 
 use Simplon\Facebook\Core\Vo\FacebookAuthVo;
 use Simplon\Facebook\Core\Vo\FacebookDebugTokenVo;
-use Simplon\Request\Request;
 
 /**
  * Facebook
  * @package Simplon\Facebook\Core
- * @author Tino Ehrich (tino@bigpun.me)
+ * @author  Tino Ehrich (tino@bigpun.me)
  */
 class Facebook
 {
@@ -56,7 +55,7 @@ class Facebook
 
     /**
      * @param string $uriRedirect
-     * @param array $scope
+     * @param array  $scope
      * @param string $responseType
      *
      * @return string
@@ -68,6 +67,7 @@ class Facebook
             'redirect_uri'  => $uriRedirect,
             'response_type' => $responseType,
             'scope'         => $scope,
+            'auth_type'     => 'rerequest',
         ];
 
         return FacebookRequests::renderUrl(
@@ -98,7 +98,7 @@ class Facebook
     }
 
     /**
-     * @param $accessToken
+     * @param      $accessToken
      * @param bool $refresh
      *
      * @return FacebookDebugTokenVo
