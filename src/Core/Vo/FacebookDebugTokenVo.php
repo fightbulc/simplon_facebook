@@ -16,42 +16,42 @@ class FacebookDebugTokenVo
     /**
      * @var string
      */
-    protected $appId;
+    private $appId;
 
     /**
      * @var string
      */
-    protected $userId;
+    private $userId;
 
     /**
      * @var string
      */
-    protected $profileId;
+    private $profileId;
 
     /**
      * @var string
      */
-    protected $application;
+    private $application;
 
     /**
      * @var int
      */
-    protected $expiresAt;
+    private $expiresAt;
 
     /**
      * @var bool
      */
-    protected $isValid;
+    private $isValid;
 
     /**
      * @var int
      */
-    protected $issuedAt;
+    private $issuedAt;
 
     /**
      * @var array
      */
-    protected $scopes;
+    private $scopes;
 
     /**
      * @param array $data

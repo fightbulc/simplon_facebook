@@ -14,12 +14,12 @@ class FacebookAuthVo
     /**
      * @var string
      */
-    protected $appId;
+    private $appId;
 
     /**
      * @var string
      */
-    protected $appSecret;
+    private $appSecret;
 
     /**
      * @param array $data

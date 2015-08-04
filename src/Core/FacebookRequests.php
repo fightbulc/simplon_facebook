@@ -2,6 +2,7 @@
 
 namespace Simplon\Facebook\Core;
 
+use Simplon\Facebook\Core\Vo\FacebookSignedRequestVo;
 use Simplon\Request\Request;
 use Simplon\Request\RequestResponse;
 
@@ -86,6 +87,41 @@ class FacebookRequests
         }
 
         return $path;
+    }
+
+    /**
+     * @param string $appSecret
+     * @param string $signedRequest
+     *
+     * @return null|FacebookSignedRequestVo
+     */
+    public static function parseSignedRequest($appSecret, $signedRequest)
+    {
+        list($encoded_sig, $payload) = explode('.', $signedRequest, 2);
+
+        // decode the data
+        $sig = self::base64UrlDecode($encoded_sig);
+        $data = json_decode(self::base64UrlDecode($payload), true);
+
+        // confirm the signature
+        $expected_sig = hash_hmac('sha256', $payload, $appSecret, $raw = true);
+
+        if ($sig !== $expected_sig)
+        {
+            return null;
+        }
+
+        return new FacebookSignedRequestVo($data);
+    }
+
+    /**
+     * @param string $input
+     *
+     * @return string
+     */
+    private static function base64UrlDecode($input)
+    {
+        return base64_decode(strtr($input, '-_', '+/'));
     }
 
     /**
