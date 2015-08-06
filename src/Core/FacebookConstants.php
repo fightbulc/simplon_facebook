@@ -40,6 +40,7 @@ class FacebookConstants
     const URL_DOMAIN_FACEBOOK = 'https://www.facebook.com';
     const URL_DOMAIN_GRAPH = 'https://graph.facebook.com';
     const PATH_LOGIN = '/dialog/oauth';
+    const PATH_PAGETAB = '/dialog/pagetab';
     const PATH_DEBUG_TOKEN = '/debug_token';
     const PATH_OAUTH_ACCESSTOKEN = '/oauth/access_token';
     const PATH_ME = '/me';
@@ -50,6 +51,7 @@ class FacebookConstants
     const PATH_OPEN_GRAPH_DATA = '/{{itemId}}';
     const PATH_PAGE_DATA = '/{{pageId}}';
     const PATH_PAGE_FEED = '/{{pageId}}/feed';
+    const PATH_PAGE_TABS = '/{{pageId}}/tabs';
     const PATH_POST = '/{{postId}}';
     const PATH_EVENT_DATA = '/{{eventId}}';
     const PATH_EVENT_CREATE = '/{{ownerIdentifier}}/events';

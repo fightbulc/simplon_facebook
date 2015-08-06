@@ -78,6 +78,25 @@ class Facebook
     }
 
     /**
+     * @param string $uriRedirect
+     *
+     * @return string
+     */
+    public function getUrlPageTabDialog($uriRedirect)
+    {
+        $params = [
+            'app_id'       => $this->getFacebookAuthVo()->getAppId(),
+            'redirect_uri' => $uriRedirect,
+        ];
+
+        return FacebookRequests::renderUrl(
+            FacebookConstants::URL_DOMAIN_FACEBOOK,
+            FacebookConstants::PATH_PAGETAB,
+            $params
+        );
+    }
+
+    /**
      * @return string
      */
     public function getAppId()

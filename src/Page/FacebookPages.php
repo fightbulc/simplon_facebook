@@ -102,6 +102,84 @@ class FacebookPages
     }
 
     /**
+     * @param string   $pageAccessToken
+     * @param int      $pageId
+     * @param int      $appId
+     * @param null|int $position
+     *
+     * @return bool|null
+     */
+    public function addTab($pageAccessToken, $pageId, $appId, $position = null)
+    {
+        $path = FacebookRequests::renderPath(
+            FacebookConstants::PATH_PAGE_TABS,
+            ['pageId' => $pageId]
+        );
+
+        $url = FacebookRequests::renderUrl(
+            FacebookConstants::URL_DOMAIN_GRAPH,
+            $path,
+            ['access_token' => $pageAccessToken]
+        );
+
+        // tab params
+        $params = [
+            'app_id'   => $appId,
+            'position' => $position
+
+        ];
+
+        $response = FacebookRequests::publish($url, $params);
+
+        if (isset($response['success']) === false)
+        {
+            return null;
+        }
+
+        // --------------------------------------
+
+        return true;
+    }
+
+    /**
+     * @param string $pageAccessToken
+     * @param int    $pageId
+     * @param int    $appId
+     *
+     * @return bool|null
+     */
+    public function removeTab($pageAccessToken, $pageId, $appId)
+    {
+        $path = FacebookRequests::renderPath(
+            FacebookConstants::PATH_PAGE_TABS,
+            ['pageId' => $pageId]
+        );
+
+        $url = FacebookRequests::renderUrl(
+            FacebookConstants::URL_DOMAIN_GRAPH,
+            $path,
+            ['access_token' => $pageAccessToken]
+        );
+
+        // tab params
+        // tab params
+        $params = [
+            'tab' => 'app_' . $appId,
+        ];
+
+        $response = FacebookRequests::delete($url, $params);
+
+        if (isset($response['success']) === false)
+        {
+            return null;
+        }
+
+        // --------------------------------------
+
+        return true;
+    }
+
+    /**
      * @return FacebookPosts
      */
     private function getFacebookPosts()
