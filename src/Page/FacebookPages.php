@@ -6,6 +6,7 @@ use Simplon\Facebook\Core\FacebookConstants;
 use Simplon\Facebook\Core\FacebookRequests;
 use Simplon\Facebook\Page\Vo\FacebookPageVo;
 use Simplon\Facebook\Post\FacebookPosts;
+use Simplon\Facebook\Post\Vo\FacebookPostVo;
 
 /**
  * FacebookPages
@@ -41,51 +42,40 @@ class FacebookPages
      */
     public function getPageData($pageAccessToken, $urlname)
     {
-        $params = [
-            'access_token' => $pageAccessToken,
-        ];
-
         $response = FacebookRequests::read(
-            str_replace('{{pageId}}', $urlname, FacebookConstants::PATH_PAGE_DATA),
-            $params
+            FacebookRequests::renderPath(FacebookConstants::PATH_PAGE_DATA, ['{{pageId}}' => $urlname]),
+            ['access_token' => $pageAccessToken]
         );
 
         return (new FacebookPageVo())->setData($response);
     }
 
     /**
-     * @param string      $pageAccessToken
-     * @param string      $pageId
-     * @param string      $message
-     * @param null|string $link
+     * @param string $pageAccessToken
+     * @param string $pageId
+     * @param FacebookPostVo $facebookPostVo
      *
      * @return null|string
      */
-    public function feedPublish($pageAccessToken, $pageId, $message, $link = null)
+    public function feedCreate($pageAccessToken, $pageId, FacebookPostVo $facebookPostVo)
     {
-        $path = FacebookRequests::renderPath(
-            FacebookConstants::PATH_PAGE_FEED,
-            ['pageId' => $pageId]
-        );
-
         return $this
             ->getFacebookPosts()
-            ->feedPublish($path, $pageAccessToken, $message, $link);
+            ->create($pageAccessToken, $pageId, $facebookPostVo);
     }
 
     /**
-     * @param string      $pageAccessToken
-     * @param string      $postId
-     * @param string      $message
-     * @param null|string $link
+     * @param string $pageAccessToken
+     * @param string $postId
+     * @param FacebookPostVo $facebookPostVo
      *
      * @return bool
      */
-    public function feedUpdate($pageAccessToken, $postId, $message, $link = null)
+    public function feedUpdate($pageAccessToken, $postId, FacebookPostVo $facebookPostVo)
     {
         return $this
             ->getFacebookPosts()
-            ->feedUpdate($pageAccessToken, $postId, $message, $link);
+            ->update($pageAccessToken, $postId, $facebookPostVo);
     }
 
     /**
@@ -94,39 +84,33 @@ class FacebookPages
      *
      * @return bool|null
      */
-    public function feedRemove($pageAccessToken, $postId)
+    public function feedDelete($pageAccessToken, $postId)
     {
         return $this
             ->getFacebookPosts()
-            ->feedRemove($pageAccessToken, $postId);
+            ->delete($pageAccessToken, $postId);
     }
 
     /**
-     * @param string   $pageAccessToken
-     * @param int      $pageId
-     * @param int      $appId
+     * @param string $pageAccessToken
+     * @param int $pageId
+     * @param int $appId
      * @param null|int $position
      *
      * @return bool|null
      */
     public function addTab($pageAccessToken, $pageId, $appId, $position = null)
     {
-        $path = FacebookRequests::renderPath(
-            FacebookConstants::PATH_PAGE_TABS,
-            ['pageId' => $pageId]
-        );
-
         $url = FacebookRequests::renderUrl(
             FacebookConstants::URL_DOMAIN_GRAPH,
-            $path,
+            FacebookRequests::renderPath(FacebookConstants::PATH_PAGE_TABS, ['pageId' => $pageId]),
             ['access_token' => $pageAccessToken]
         );
 
         // tab params
         $params = [
             'app_id'   => $appId,
-            'position' => $position
-
+            'position' => $position,
         ];
 
         $response = FacebookRequests::publish($url, $params);
@@ -143,25 +127,19 @@ class FacebookPages
 
     /**
      * @param string $pageAccessToken
-     * @param int    $pageId
-     * @param int    $appId
+     * @param int $pageId
+     * @param int $appId
      *
      * @return bool|null
      */
     public function removeTab($pageAccessToken, $pageId, $appId)
     {
-        $path = FacebookRequests::renderPath(
-            FacebookConstants::PATH_PAGE_TABS,
-            ['pageId' => $pageId]
-        );
-
         $url = FacebookRequests::renderUrl(
             FacebookConstants::URL_DOMAIN_GRAPH,
-            $path,
+            FacebookRequests::renderPath(FacebookConstants::PATH_PAGE_TABS, ['pageId' => $pageId]),
             ['access_token' => $pageAccessToken]
         );
 
-        // tab params
         // tab params
         $params = [
             'tab' => 'app_' . $appId,

@@ -43,6 +43,7 @@ class FacebookConstants
     const PATH_PAGETAB = '/dialog/pagetab';
     const PATH_DEBUG_TOKEN = '/debug_token';
     const PATH_OAUTH_ACCESSTOKEN = '/oauth/access_token';
+    const PATH_OBJECT = '/{{id}}';
     const PATH_ME = '/me';
     const PATH_ME_FRIENDS = '/me/friends';
     const PATH_ME_ACCOUNTS = '/me/accounts';
@@ -52,7 +53,8 @@ class FacebookConstants
     const PATH_PAGE_DATA = '/{{pageId}}';
     const PATH_PAGE_FEED = '/{{pageId}}/feed';
     const PATH_PAGE_TABS = '/{{pageId}}/tabs';
-    const PATH_POST = '/{{postId}}';
+    const PATH_POST_CREATE = '/{{parentObjectId}}/feed';
+    const PATH_PHOTO_CREATE = '/{{parentObjectId}}/photos';
     const PATH_EVENT_DATA = '/{{eventId}}';
     const PATH_EVENT_CREATE = '/{{ownerIdentifier}}/events';
 

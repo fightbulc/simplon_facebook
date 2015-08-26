@@ -4,6 +4,7 @@ namespace Simplon\Facebook\Post;
 
 use Simplon\Facebook\Core\FacebookConstants;
 use Simplon\Facebook\Core\FacebookRequests;
+use Simplon\Facebook\Post\Vo\FacebookPostVo;
 
 /**
  * FacebookPosts
@@ -13,31 +14,21 @@ use Simplon\Facebook\Core\FacebookRequests;
 class FacebookPosts
 {
     /**
-     * @param string      $path
-     * @param string      $accessToken
-     * @param string      $message
-     * @param null|string $link
+     * @param string $accessToken
+     * @param string $parentObjectId
+     * @param FacebookPostVo $facebookPostVo
      *
      * @return null|string
      */
-    public function feedPublish($path, $accessToken, $message, $link = null)
+    public function create($accessToken, $parentObjectId, FacebookPostVo $facebookPostVo)
     {
         $url = FacebookRequests::renderUrl(
             FacebookConstants::URL_DOMAIN_GRAPH,
-            $path,
+            FacebookRequests::renderPath(FacebookConstants::PATH_POST_CREATE, ['parentObjectId' => $parentObjectId]),
             ['access_token' => $accessToken]
         );
 
-        // message params
-        $params = ['message' => $message];
-
-        // add link if available
-        if ($link !== null)
-        {
-            $params['link'] = $link;
-        }
-
-        $response = FacebookRequests::publish($url, $params);
+        $response = FacebookRequests::publish($url, $facebookPostVo->toArray());
 
         if (isset($response['id']) === false)
         {
@@ -50,31 +41,21 @@ class FacebookPosts
     }
 
     /**
-     * @param string      $accessToken
-     * @param string      $postId
-     * @param string      $message
-     * @param null|string $link
+     * @param string $accessToken
+     * @param string $postId
+     * @param FacebookPostVo $facebookPostVo
      *
      * @return bool
      */
-    public function feedUpdate($accessToken, $postId, $message, $link = null)
+    public function update($accessToken, $postId, FacebookPostVo $facebookPostVo)
     {
         $url = FacebookRequests::renderUrl(
             FacebookConstants::URL_DOMAIN_GRAPH,
-            FacebookRequests::renderPath(FacebookConstants::PATH_POST, ['postId' => $postId]),
+            FacebookRequests::renderPath(FacebookConstants::PATH_OBJECT, ['postId' => $postId]),
             ['access_token' => $accessToken]
         );
 
-        // message params
-        $params = ['message' => $message];
-
-        // add link if available
-        if ($link !== null)
-        {
-            $params['link'] = $link;
-        }
-
-        $response = FacebookRequests::publish($url, $params);
+        $response = FacebookRequests::publish($url, $facebookPostVo->toArray());
 
         return (bool)$response['success'];
     }
@@ -85,11 +66,11 @@ class FacebookPosts
      *
      * @return bool|null
      */
-    public function feedRemove($accessToken, $postId)
+    public function delete($accessToken, $postId)
     {
         $url = FacebookRequests::renderUrl(
             FacebookConstants::URL_DOMAIN_GRAPH,
-            FacebookRequests::renderPath(FacebookConstants::PATH_POST, ['postId' => $postId]),
+            FacebookRequests::renderPath(FacebookConstants::PATH_OBJECT, ['postId' => $postId]),
             ['access_token' => $accessToken]
         );
 

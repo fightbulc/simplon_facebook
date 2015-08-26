@@ -7,6 +7,7 @@ use Simplon\Facebook\Core\FacebookConstants;
 use Simplon\Facebook\Core\FacebookErrorException;
 use Simplon\Facebook\Core\FacebookRequests;
 use Simplon\Facebook\Post\FacebookPosts;
+use Simplon\Facebook\Post\Vo\FacebookPostVo;
 use Simplon\Facebook\User\Vo\FacebookUserAccountVo;
 use Simplon\Facebook\User\Vo\FacebookUserDataVo;
 use Simplon\Facebook\User\Vo\FacebookUserFriendVo;
@@ -29,7 +30,7 @@ class FacebookUsers
     private $facebookPosts;
 
     /**
-     * @param Facebook      $facebook
+     * @param Facebook $facebook
      * @param FacebookPosts $facebookPosts
      */
     public function __construct(Facebook $facebook, FacebookPosts $facebookPosts)
@@ -219,37 +220,31 @@ class FacebookUsers
     }
 
     /**
-     * @param string      $userAccessToken
-     * @param string      $message
-     * @param null|string $link
+     * @param string $userAccessToken
+     * @param string $userId
+     * @param FacebookPostVo $facebookPostVo
      *
      * @return null|string
      */
-    public function feedPublish($userAccessToken, $message, $link = null)
+    public function feedCreate($userAccessToken, $userId, FacebookPostVo $facebookPostVo)
     {
         return $this
             ->getFacebookPosts()
-            ->feedPublish(
-                FacebookConstants::PATH_ME_FEED,
-                $userAccessToken,
-                $message,
-                $link
-            );
+            ->create($userAccessToken, $userId, $facebookPostVo);
     }
 
     /**
-     * @param string      $userAccessToken
-     * @param string      $postId
-     * @param string      $message
-     * @param null|string $link
+     * @param string $userAccessToken
+     * @param string $postId
+     * @param FacebookPostVo $facebookPostVo
      *
      * @return bool
      */
-    public function feedUpdate($userAccessToken, $postId, $message, $link = null)
+    public function feedUpdate($userAccessToken, $postId, FacebookPostVo $facebookPostVo)
     {
         return $this
             ->getFacebookPosts()
-            ->feedUpdate($userAccessToken, $postId, $message, $link);
+            ->update($userAccessToken, $postId, $facebookPostVo);
     }
 
     /**
@@ -258,11 +253,11 @@ class FacebookUsers
      *
      * @return bool|null
      */
-    public function feedRemove($userAccessToken, $postId)
+    public function feedDelete($userAccessToken, $postId)
     {
         return $this
             ->getFacebookPosts()
-            ->feedRemove($userAccessToken, $postId);
+            ->delete($userAccessToken, $postId);
     }
 
     /**
