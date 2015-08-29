@@ -67,7 +67,7 @@ class Facebook
             'redirect_uri'  => $uriRedirect,
             'response_type' => $responseType,
             'scope'         => $scope,
-            'auth_type'     => 'rerequest',
+            'auth_type'     => 'rerequest', // re-request revoked permissions
         ];
 
         return FacebookRequests::renderUrl(
