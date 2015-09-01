@@ -15,6 +15,11 @@ class FacebookPostVo
     /**
      * @var string
      */
+    protected $id;
+
+    /**
+     * @var string
+     */
     protected $message;
 
     /**
@@ -28,6 +33,26 @@ class FacebookPostVo
     public function __construct($message)
     {
         $this->message = $message;
+    }
+
+    /**
+     * @return string
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param string $id
+     *
+     * @return FacebookPostVo
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
     }
 
     /**

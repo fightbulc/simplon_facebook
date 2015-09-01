@@ -2,9 +2,12 @@
 
 namespace Simplon\Facebook\Photo;
 
-use Simplon\Facebook\Core\FacebookConstants;
-use Simplon\Facebook\Core\FacebookRequests;
+use Simplon\Facebook\FacebookConstants;
+use Simplon\Facebook\FacebookException;
+use Simplon\Facebook\FacebookRequests;
 use Simplon\Facebook\Photo\Vo\FacebookPhotoVo;
+use Simplon\Helper\CastAway;
+use Simplon\Helper\Helper;
 
 /**
  * Class FacebookPhotos
@@ -14,54 +17,52 @@ class FacebookPhotos
 {
     /**
      * @param string $accessToken
-     * @param string $objectId
+     * @param string $edgeId
      * @param FacebookPhotoVo $facebookPhotoVo
      *
-     * @return int|null
+     * @return null|string
+     * @throws FacebookException
      */
-    public function create($accessToken, $objectId, FacebookPhotoVo $facebookPhotoVo)
+    public function create($accessToken, $edgeId, FacebookPhotoVo $facebookPhotoVo)
     {
-        $requestUrl = FacebookRequests::renderUrl(
-            FacebookConstants::URL_DOMAIN_GRAPH,
-            FacebookRequests::renderPath(FacebookConstants::PATH_PHOTO_CREATE, ['parentObjectId' => $objectId]),
+        $requestUrl = Helper::urlRender(
+            [FacebookConstants::URL_GRAPH, FacebookConstants::PATH_PHOTO_EDGE],
+            ['edgeId' => $edgeId],
             ['access_token' => $accessToken]
         );
 
-        $response = FacebookRequests::publish($requestUrl, $facebookPhotoVo->toArray());
+        $response = FacebookRequests::post($requestUrl, $facebookPhotoVo->toArray());
 
-        if (isset($response['id']) === false)
+        if (empty($response['id']) === false)
         {
-            return null;
+            return CastAway::toString($response['id']);
         }
 
-        // --------------------------------------
-
-        return (int)$response['id'];
+        throw new FacebookException('Could not create photo');
     }
 
     /**
      * @param string $accessToken
      * @param string $photoId
      *
-     * @return bool|null
+     * @return bool
+     * @throws FacebookException
      */
     public function delete($accessToken, $photoId)
     {
-        $url = FacebookRequests::renderUrl(
-            FacebookConstants::URL_DOMAIN_GRAPH,
-            FacebookRequests::renderPath(FacebookConstants::PATH_OBJECT, ['id' => $photoId]),
+        $url = Helper::urlRender(
+            [FacebookConstants::URL_GRAPH, FacebookConstants::PATH_GRAPH_ITEM],
+            ['id' => $photoId],
             ['access_token' => $accessToken]
         );
 
         $response = FacebookRequests::delete($url);
 
-        if (isset($response['success']) === false)
+        if (empty($response['success']) === false)
         {
-            return null;
+            return true;
         }
 
-        // --------------------------------------
-
-        return true;
+        throw new FacebookException('Could not delete photo');
     }
 }

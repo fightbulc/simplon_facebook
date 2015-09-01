@@ -1,18 +1,21 @@
 <?php
 
-namespace Simplon\Facebook\Core\Vo;
+namespace Simplon\Facebook\App\Vo;
 
-use Moment\Moment;
-use Simplon\Facebook\Core\FacebookConstants;
+use Simplon\Facebook\FacebookConstants;
 use Simplon\Helper\DataSetter;
 
 /**
- * FacebookDebugTokenVo
- * @package Simplon\Facebook\Core\Vo
- * @author Tino Ehrich (tino@bigpun.me)
+ * Class DebugTokenVo
+ * @package Simplon\Facebook\App\Vo
  */
-class FacebookDebugTokenVo
+class DebugTokenVo
 {
+    /**
+     * @var string
+     */
+    private $accessToken;
+
     /**
      * @var string
      */
@@ -56,7 +59,7 @@ class FacebookDebugTokenVo
     /**
      * @param array $data
      *
-     * @return FacebookDebugTokenVo
+     * @return DebugTokenVo
      */
     public function setData(array $data)
     {
@@ -75,9 +78,29 @@ class FacebookDebugTokenVo
     }
 
     /**
+     * @return string
+     */
+    public function getAccessToken()
+    {
+        return $this->accessToken;
+    }
+
+    /**
+     * @param string $accessToken
+     *
+     * @return DebugTokenVo
+     */
+    public function setAccessToken($accessToken)
+    {
+        $this->accessToken = $accessToken;
+
+        return $this;
+    }
+
+    /**
      * @param string $appId
      *
-     * @return FacebookDebugTokenVo
+     * @return DebugTokenVo
      */
     public function setAppId($appId)
     {
@@ -97,7 +120,7 @@ class FacebookDebugTokenVo
     /**
      * @param string $profileId
      *
-     * @return FacebookDebugTokenVo
+     * @return DebugTokenVo
      */
     public function setProfileId($profileId)
     {
@@ -134,7 +157,7 @@ class FacebookDebugTokenVo
     /**
      * @param string $application
      *
-     * @return FacebookDebugTokenVo
+     * @return DebugTokenVo
      */
     public function setApplication($application)
     {
@@ -154,7 +177,7 @@ class FacebookDebugTokenVo
     /**
      * @param int $expiresAt
      *
-     * @return FacebookDebugTokenVo
+     * @return DebugTokenVo
      */
     public function setExpiresAt($expiresAt)
     {
@@ -172,17 +195,9 @@ class FacebookDebugTokenVo
     }
 
     /**
-     * @return Moment
-     */
-    public function getExpiresAtAsMoment()
-    {
-        return new Moment('@' . $this->getExpiresAt());
-    }
-
-    /**
      * @param bool $isValid
      *
-     * @return FacebookDebugTokenVo
+     * @return DebugTokenVo
      */
     public function setIsValid($isValid)
     {
@@ -202,7 +217,7 @@ class FacebookDebugTokenVo
     /**
      * @param int $issuedAt
      *
-     * @return FacebookDebugTokenVo
+     * @return DebugTokenVo
      */
     public function setIssuedAt($issuedAt)
     {
@@ -220,17 +235,9 @@ class FacebookDebugTokenVo
     }
 
     /**
-     * @return Moment
-     */
-    public function getIssuedAtAsMoment()
-    {
-        return new Moment('@' . $this->getIssuedAt());
-    }
-
-    /**
      * @param array $scopes
      *
-     * @return FacebookDebugTokenVo
+     * @return DebugTokenVo
      */
     public function setScopes($scopes)
     {
@@ -276,7 +283,7 @@ class FacebookDebugTokenVo
     /**
      * @param string $userId
      *
-     * @return FacebookDebugTokenVo
+     * @return DebugTokenVo
      */
     public function setUserId($userId)
     {

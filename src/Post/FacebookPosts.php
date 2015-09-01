@@ -2,9 +2,12 @@
 
 namespace Simplon\Facebook\Post;
 
-use Simplon\Facebook\Core\FacebookConstants;
-use Simplon\Facebook\Core\FacebookRequests;
+use Simplon\Facebook\FacebookConstants;
+use Simplon\Facebook\FacebookException;
+use Simplon\Facebook\FacebookRequests;
 use Simplon\Facebook\Post\Vo\FacebookPostVo;
+use Simplon\Helper\CastAway;
+use Simplon\Helper\Helper;
 
 /**
  * FacebookPosts
@@ -15,74 +18,77 @@ class FacebookPosts
 {
     /**
      * @param string $accessToken
-     * @param string $parentObjectId
+     * @param string $edgeId
      * @param FacebookPostVo $facebookPostVo
      *
-     * @return null|string
+     * @return string
+     * @throws FacebookException
      */
-    public function create($accessToken, $parentObjectId, FacebookPostVo $facebookPostVo)
+    public function create($accessToken, $edgeId, FacebookPostVo $facebookPostVo)
     {
-        $url = FacebookRequests::renderUrl(
-            FacebookConstants::URL_DOMAIN_GRAPH,
-            FacebookRequests::renderPath(FacebookConstants::PATH_POST_CREATE, ['parentObjectId' => $parentObjectId]),
+        $url = Helper::urlRender(
+            [FacebookConstants::URL_GRAPH, FacebookConstants::PATH_POST_EDGE],
+            ['edgeId' => $edgeId],
             ['access_token' => $accessToken]
         );
 
-        $response = FacebookRequests::publish($url, $facebookPostVo->toArray());
+        $response = FacebookRequests::post($url, $facebookPostVo->toArray());
 
-        if (isset($response['id']) === false)
+        if (empty($response['id']) === false)
         {
-            return null;
+            return CastAway::toString($response['id']);
         }
 
-        // --------------------------------------
-
-        return (string)$response['id'];
+        throw new FacebookException('Could not create post');
     }
 
     /**
      * @param string $accessToken
-     * @param string $postId
      * @param FacebookPostVo $facebookPostVo
      *
      * @return bool
+     * @throws FacebookException
      */
-    public function update($accessToken, $postId, FacebookPostVo $facebookPostVo)
+    public function update($accessToken, FacebookPostVo $facebookPostVo)
     {
-        $url = FacebookRequests::renderUrl(
-            FacebookConstants::URL_DOMAIN_GRAPH,
-            FacebookRequests::renderPath(FacebookConstants::PATH_OBJECT, ['postId' => $postId]),
+        $url = Helper::urlRender(
+            [FacebookConstants::URL_GRAPH, FacebookConstants::PATH_GRAPH_ITEM],
+            ['id' => $facebookPostVo->getId()],
             ['access_token' => $accessToken]
         );
 
-        $response = FacebookRequests::publish($url, $facebookPostVo->toArray());
+        $response = FacebookRequests::post($url, $facebookPostVo->toArray());
 
-        return (bool)$response['success'];
+        if (empty($response['success']) === false)
+        {
+            return true;
+        }
+
+        throw new FacebookException('Could not update post');
     }
 
     /**
      * @param string $accessToken
      * @param string $postId
      *
-     * @return bool|null
+     * @return bool
+     * @throws FacebookException
      */
     public function delete($accessToken, $postId)
     {
-        $url = FacebookRequests::renderUrl(
-            FacebookConstants::URL_DOMAIN_GRAPH,
-            FacebookRequests::renderPath(FacebookConstants::PATH_OBJECT, ['postId' => $postId]),
+        $url = Helper::urlRender(
+            [FacebookConstants::URL_GRAPH, FacebookConstants::PATH_GRAPH_ITEM],
+            ['id' => $postId],
             ['access_token' => $accessToken]
         );
 
         $response = FacebookRequests::delete($url);
 
-        if (isset($response['success']) === false)
+        if (empty($response['success']) === false)
         {
-            return null;
+            return true;
         }
 
-        // --------------------------------------
-
-        return true;
+        throw new FacebookException('Could not delete post');
     }
 }

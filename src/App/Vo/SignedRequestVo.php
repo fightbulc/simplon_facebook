@@ -1,15 +1,14 @@
 <?php
 
-namespace Simplon\Facebook\Core\Vo;
+namespace Simplon\Facebook\App\Vo;
 
 use Simplon\Helper\DataSetter;
 
 /**
- * FacebookSignedRequestVo
- * @package Simplon\Facebook\Core\Vo
- * @author  Tino Ehrich (tino@bigpun.me)
+ * Class SignedRequestVo
+ * @package Simplon\Facebook\App\Vo
  */
-class FacebookSignedRequestVo
+class SignedRequestVo
 {
     /**
      * @var int
@@ -87,7 +86,7 @@ class FacebookSignedRequestVo
     /**
      * @param int $expires
      *
-     * @return FacebookSignedRequestVo
+     * @return SignedRequestVo
      */
     public function setExpires($expires)
     {
@@ -107,7 +106,7 @@ class FacebookSignedRequestVo
     /**
      * @param int $issuedAt
      *
-     * @return FacebookSignedRequestVo
+     * @return SignedRequestVo
      */
     public function setIssuedAt($issuedAt)
     {
@@ -127,7 +126,7 @@ class FacebookSignedRequestVo
     /**
      * @param string $oauthToken
      *
-     * @return FacebookSignedRequestVo
+     * @return SignedRequestVo
      */
     public function setOauthToken($oauthToken)
     {
@@ -155,7 +154,7 @@ class FacebookSignedRequestVo
     /**
      * @param array $page
      *
-     * @return FacebookSignedRequestVo
+     * @return SignedRequestVo
      */
     public function setPageData(array $page)
     {
@@ -200,7 +199,7 @@ class FacebookSignedRequestVo
     /**
      * @param int $userId
      *
-     * @return FacebookSignedRequestVo
+     * @return SignedRequestVo
      */
     public function setUserId($userId)
     {
@@ -212,7 +211,7 @@ class FacebookSignedRequestVo
     /**
      * @param array $user
      *
-     * @return FacebookSignedRequestVo
+     * @return SignedRequestVo
      */
     public function setUserData(array $user)
     {

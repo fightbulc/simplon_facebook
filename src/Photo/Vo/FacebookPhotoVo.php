@@ -15,6 +15,11 @@ class FacebookPhotoVo
     /**
      * @var string
      */
+    protected $id;
+
+    /**
+     * @var string
+     */
     protected $url;
 
     /**
@@ -33,6 +38,26 @@ class FacebookPhotoVo
     public function __construct($urlPhoto)
     {
         $this->url = $urlPhoto;
+    }
+
+    /**
+     * @return string
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param string $id
+     *
+     * @return FacebookPhotoVo
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
     }
 
     /**
