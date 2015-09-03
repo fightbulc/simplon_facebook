@@ -28,6 +28,11 @@ class FacebookPostVo
     protected $link;
 
     /**
+     * @var string
+     */
+    protected $picture;
+
+    /**
      * @param string $message
      */
     public function __construct($message)
@@ -91,6 +96,26 @@ class FacebookPostVo
     public function setLink($link)
     {
         $this->link = $link;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPicture()
+    {
+        return $this->picture;
+    }
+
+    /**
+     * @param string $picture
+     *
+     * @return FacebookPostVo
+     */
+    public function setPicture($picture)
+    {
+        $this->picture = $picture;
 
         return $this;
     }
