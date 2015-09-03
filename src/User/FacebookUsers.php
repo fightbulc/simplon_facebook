@@ -6,6 +6,8 @@ use Simplon\Facebook\App\FacebookApps;
 use Simplon\Facebook\FacebookConstants;
 use Simplon\Facebook\FacebookException;
 use Simplon\Facebook\FacebookRequests;
+use Simplon\Facebook\Photo\FacebookPhotos;
+use Simplon\Facebook\Photo\Vo\FacebookPhotoVo;
 use Simplon\Facebook\Post\FacebookPosts;
 use Simplon\Facebook\Post\Vo\FacebookPostVo;
 use Simplon\Facebook\User\Vo\FacebookUserAccountVo;
@@ -33,6 +35,11 @@ class FacebookUsers
     private $facebookPosts;
 
     /**
+     * @var FacebookPhotos
+     */
+    private $facebookPhotos;
+
+    /**
      * @var string
      */
     private $accessToken;
@@ -45,11 +52,13 @@ class FacebookUsers
     /**
      * @param FacebookApps $facebookApps
      * @param FacebookPosts $facebookPosts
+     * @param FacebookPhotos $facebookPhotos
      */
-    public function __construct(FacebookApps $facebookApps, FacebookPosts $facebookPosts)
+    public function __construct(FacebookApps $facebookApps, FacebookPosts $facebookPosts, FacebookPhotos $facebookPhotos)
     {
         $this->facebookApps = $facebookApps;
         $this->facebookPosts = $facebookPosts;
+        $this->facebookPhotos = $facebookPhotos;
     }
 
     /**
@@ -421,6 +430,36 @@ class FacebookUsers
     }
 
     /**
+     * @param FacebookPhotoVo $facebookPhotoVo
+     *
+     * @return null|string
+     * @throws FacebookException
+     */
+    public function photoCreate(FacebookPhotoVo $facebookPhotoVo)
+    {
+        return $this
+            ->getFacebookPhotos()
+            ->create(
+                $this->getAccessToken(),
+                $this->getUserId(),
+                $facebookPhotoVo
+            );
+    }
+
+    /**
+     * @param string $photoId
+     *
+     * @return bool
+     * @throws FacebookException
+     */
+    public function photoDelete($photoId)
+    {
+        return $this
+            ->getFacebookPhotos()
+            ->delete($this->getAccessToken(), $photoId);
+    }
+
+    /**
      * @return FacebookApps
      */
     private function getFacebookApps()
@@ -434,5 +473,13 @@ class FacebookUsers
     private function getFacebookPosts()
     {
         return $this->facebookPosts;
+    }
+
+    /**
+     * @return FacebookPhotos
+     */
+    private function getFacebookPhotos()
+    {
+        return $this->facebookPhotos;
     }
 }
