@@ -20,7 +20,7 @@ class FacebookRequests
     public static function get($url, array $params = [])
     {
         return self::handleResponse(
-            Request::get($url, $params)
+            (new Request())->get($url, $params)
         );
     }
 
@@ -33,7 +33,7 @@ class FacebookRequests
     public static function post($url, array $params = [])
     {
         return self::handleResponse(
-            Request::post($url, $params)
+            (new Request())->post($url, $params)
         );
     }
 
@@ -46,7 +46,7 @@ class FacebookRequests
     public static function delete($url, array $params = [])
     {
         return self::handleResponse(
-            Request::delete($url, $params)
+            (new Request())->delete($url, $params)
         );
     }
 

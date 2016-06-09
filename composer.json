@@ -18,7 +18,7 @@
   ],
   "require": {
     "php": ">=5.4",
-    "simplon/request": "0.4.*",
+    "simplon/request": "1.1.*",
     "simplon/helper": "0.11.*"
   },
   "autoload": {
