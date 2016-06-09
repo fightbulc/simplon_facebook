@@ -1,20 +1,28 @@
 <?php
 
 use Simplon\Facebook\FacebookException;
+use Simplon\Facebook\Photo\FacebookPhotos;
 use Simplon\Facebook\Post\FacebookPosts;
 use Simplon\Facebook\User\FacebookUsers;
 
 require 'common.php';
 
-$options = getopt('c:i:e:a:d:');
+$options = getopt('u:c:i:e:a:d:');
 
 $urlCallback = 'https://play-facebook.ngrok.io/';
-$user = new FacebookUsers($app, new FacebookPosts());
+$user = new FacebookUsers($app, new FacebookPosts(), new FacebookPhotos());
 
 try
 {
+    // get auth url
+    if (empty($options['u']) === false)
+    {
+        $user->getUrlAuthentication($urlCallback);
+        var_dump($app->getDebugTokenVo($user->getAccessToken()));
+    }
+
     // auth with code
-    if (empty($options['c']) === false)
+    elseif (empty($options['c']) === false)
     {
         $user->requestAccessTokenByCode($options['c'], $urlCallback);
         var_dump($app->getDebugTokenVo($user->getAccessToken()));
