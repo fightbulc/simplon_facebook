@@ -15,7 +15,7 @@ class FacebookConstants
     const ACCESSTOKEN_TYPE_USER = 'USER';
 
     const URL_FACEBOOK = 'https://www.facebook.com';
-    const URL_GRAPH = 'https://graph.facebook.com/v2.4';
+    const URL_GRAPH = 'https://graph.facebook.com/v2.6';
 
     const PATH_OAUTH = '/dialog/oauth';
     const PATH_PAGETAB = '/dialog/pagetab';
