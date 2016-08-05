@@ -39,6 +39,11 @@ class FacebookUserDataVo
     /**
      * @var string
      */
+    private $middleName;
+
+    /**
+     * @var string
+     */
     private $lastName;
 
     /**
@@ -59,12 +64,27 @@ class FacebookUserDataVo
     /**
      * @var string
      */
+    private $location;
+
+    /**
+     * @var string
+     */
     private $gender;
+
+    /**
+     * @var array
+     */
+    private $ageRange;
 
     /**
      * @var string
      */
     private $urlProfile;
+
+    /**
+     * @var string
+     */
+    private $birthday;
 
     /**
      * @var string
@@ -93,12 +113,16 @@ class FacebookUserDataVo
             ->assignField('id', function ($val) { $this->setId($val); })
             ->assignField('username', function ($val) { $this->setUsername($val); })
             ->assignField('first_name', function ($val) { $this->setFirstName($val); })
+            ->assignField('middle_name', function ($val) { $this->setMiddleName($val); })
             ->assignField('last_name', function ($val) { $this->setLastName($val); })
             ->assignField('name', function ($val) { $this->setFullName($val); })
             ->assignField('email', function ($val) { $this->setEmail($val); })
             ->assignField('locale', function ($val) { $this->setLocale($val); })
+            ->assignField('location', function ($val) { $this->setLocation($val); })
             ->assignField('gender', function ($val) { $this->setGender($val); })
+            ->assignField('age_range', function ($val) { $this->setAgeRange($val); })
             ->assignField('link', function ($val) { $this->setUrlProfile($val); })
+            ->assignField('birthday', function ($val) { $this->setBirthday($val); })
             ->assignField('updated_time', function ($val) { $this->setUpdatedAt($val); })
             ->assignField('timezone', function ($val) { $this->setTimezone($val); })
             ->assignField('verified', function ($val) { $this->setVerified($val); })
@@ -178,6 +202,26 @@ class FacebookUserDataVo
     public function getFirstName()
     {
         return (string)$this->firstName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMiddleName()
+    {
+        return $this->middleName;
+    }
+
+    /**
+     * @param string $middleName
+     *
+     * @return FacebookUserDataVo
+     */
+    public function setMiddleName($middleName)
+    {
+        $this->middleName = $middleName;
+
+        return $this;
     }
 
     /**
@@ -396,6 +440,92 @@ class FacebookUserDataVo
     private function setRawData($rawData)
     {
         $this->data = $rawData;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAgeRange()
+    {
+        return $this->ageRange;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getAgeRangeMin()
+    {
+        if (isset($this->ageRange['min']))
+        {
+            return (int)$this->ageRange['min'];
+        }
+
+        return null;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getAgeRangeMax()
+    {
+        if (isset($this->ageRange['max']))
+        {
+            return (int)$this->ageRange['max'];
+        }
+
+        return null;
+    }
+
+    /**
+     * @param array $ageRange
+     *
+     * @return FacebookUserDataVo
+     */
+    public function setAgeRange($ageRange)
+    {
+        $this->ageRange = $ageRange;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLocation()
+    {
+        return $this->location;
+    }
+
+    /**
+     * @param string $location
+     *
+     * @return FacebookUserDataVo
+     */
+    public function setLocation($location)
+    {
+        $this->location = $location;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBirthday()
+    {
+        return $this->birthday;
+    }
+
+    /**
+     * @param string $birthday
+     *
+     * @return FacebookUserDataVo
+     */
+    public function setBirthday($birthday)
+    {
+        $this->birthday = $birthday;
 
         return $this;
     }
