@@ -254,6 +254,7 @@ class FacebookUsers
 
         $params = [
             'access_token' => $this->getAccessToken(),
+            'fields'       => 'id,name,first_name,middle_name,last_name,email,age_range,locale,location,timezone,gender,link',
         ];
 
         $response = FacebookRequests::get($url, $params);
