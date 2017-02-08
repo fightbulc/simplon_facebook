@@ -2,11 +2,11 @@
 
 namespace Simplon\Facebook\App;
 
+use Simplon\Facebook\App\Vo\DebugTokenVo;
+use Simplon\Facebook\App\Vo\SignedRequestVo;
 use Simplon\Facebook\FacebookConstants;
 use Simplon\Facebook\FacebookException;
 use Simplon\Facebook\FacebookRequests;
-use Simplon\Facebook\App\Vo\DebugTokenVo;
-use Simplon\Facebook\App\Vo\SignedRequestVo;
 use Simplon\Helper\CastAway;
 use Simplon\Helper\Helper;
 
@@ -115,6 +115,35 @@ class FacebookApps
     }
 
     /**
+     * @param string $accessToken
+     *
+     * @return string
+     * @throws FacebookException
+     */
+    public function requestLongTermAccessToken($accessToken)
+    {
+        $url = Helper::urlRender(
+            [FacebookConstants::URL_GRAPH, FacebookConstants::PATH_OAUTH_ACCESSTOKEN]
+        );
+
+        $params = [
+            'client_id'         => $this->getId(),
+            'client_secret'     => $this->getSecret(),
+            'grant_type'        => 'fb_exchange_token',
+            'fb_exchange_token' => $accessToken,
+        ];
+
+        $response = FacebookRequests::get($url, $params);
+
+        if (empty($response['access_token']) === false)
+        {
+            return $response['access_token'];
+        }
+
+        throw new FacebookException('Could not exchange tokens.');
+    }
+
+    /**
      * @param string $type
      * @param array $object
      *
@@ -172,7 +201,7 @@ class FacebookApps
     /**
      * @param string $objectId
      *
-     * @return array
+     * @return bool
      * @throws FacebookException
      */
     public function storyObjectDelete($objectId)
@@ -185,12 +214,12 @@ class FacebookApps
 
         $response = FacebookRequests::delete($url);
 
-        if (empty($response['success']) === false)
+        if (empty($response['success']))
         {
-            return true;
+            throw new FacebookException('Could not delete app story object');
         }
 
-        throw new FacebookException('Could not delete app story object');
+        return true;
     }
 
     /**
@@ -228,6 +257,7 @@ class FacebookApps
      * @param bool $refresh
      *
      * @return DebugTokenVo
+     * @throws FacebookException
      */
     public function getDebugTokenVo($accessToken, $refresh = false)
     {
@@ -250,7 +280,7 @@ class FacebookApps
         $url = Helper::urlRender(
             [
                 FacebookConstants::URL_GRAPH,
-                FacebookConstants::PATH_DEBUG_TOKEN
+                FacebookConstants::PATH_DEBUG_TOKEN,
             ]
         );
 
@@ -265,7 +295,8 @@ class FacebookApps
         {
             return (new DebugTokenVo())
                 ->setData($response['data'])
-                ->setAccessToken($inputToken);
+                ->setAccessToken($inputToken)
+                ;
         }
 
         throw new FacebookException('Cannot retrieve token information');

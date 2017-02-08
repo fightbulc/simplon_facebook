@@ -33,4 +33,5 @@ class FacebookConstants
     const PATH_PHOTO_EDGE = '/{{edgeId}}/photos';
     const PATH_PAGE_TABS = '/{{pageId}}/tabs';
     const PATH_APP_SUBSCRIPTIONS = '/{{appId}}/subscriptions';
+    const PATH_OBJECT = '/';
 }
