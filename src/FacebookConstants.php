@@ -15,7 +15,7 @@ class FacebookConstants
     const ACCESSTOKEN_TYPE_USER = 'USER';
 
     const URL_FACEBOOK = 'https://www.facebook.com';
-    const URL_GRAPH = 'https://graph.facebook.com/v2.6';
+    const URL_GRAPH = 'https://graph.facebook.com/{api-version-string}';
 
     const PATH_OAUTH = '/dialog/oauth';
     const PATH_PAGETAB = '/dialog/pagetab';
@@ -34,4 +34,25 @@ class FacebookConstants
     const PATH_PAGE_TABS = '/{{pageId}}/tabs';
     const PATH_APP_SUBSCRIPTIONS = '/{{appId}}/subscriptions';
     const PATH_OBJECT = '/';
+
+    /**
+     * @var string
+     */
+    private static $version = '2.9';
+
+    /**
+     * @param string $version
+     */
+    public static function setVersion(string $version): void
+    {
+        self::$version = $version;
+    }
+
+    /**
+     * @return string
+     */
+    public static function getVersion(): string
+    {
+        return self::$version;
+    }
 }

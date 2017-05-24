@@ -16,11 +16,13 @@ class FacebookRequests
      * @param array $params
      *
      * @return array
+     * @throws FacebookException
+     * @throws \Simplon\Request\RequestException
      */
-    public static function get($url, array $params = [])
+    public static function get(string $url, array $params = []): array
     {
         return self::handleResponse(
-            (new Request())->get($url, $params)
+            (new Request())->get(self::replaceApiVersion($url), $params)
         );
     }
 
@@ -29,11 +31,12 @@ class FacebookRequests
      * @param array $params
      *
      * @return array
+     * @throws FacebookException
      */
-    public static function post($url, array $params = [])
+    public static function post(string $url, array $params = []): array
     {
         return self::handleResponse(
-            (new Request())->post($url, $params)
+            (new Request())->post(self::replaceApiVersion($url), $params)
         );
     }
 
@@ -42,12 +45,23 @@ class FacebookRequests
      * @param array $params
      *
      * @return array
+     * @throws FacebookException
      */
-    public static function delete($url, array $params = [])
+    public static function delete(string $url, array $params = []): array
     {
         return self::handleResponse(
-            (new Request())->delete($url, $params)
+            (new Request())->delete(self::replaceApiVersion($url), $params)
         );
+    }
+
+    /**
+     * @param string $url
+     *
+     * @return string
+     */
+    private static function replaceApiVersion(string $url): string
+    {
+        return str_replace('{api-version-string}', 'v' . FacebookConstants::getVersion(), $url);
     }
 
     /**
@@ -55,7 +69,7 @@ class FacebookRequests
      *
      * @return array
      */
-    private static function parseResponse($response)
+    private static function parseResponse(string $response): array
     {
         // try json
         $data = json_decode($response, true);
@@ -76,7 +90,7 @@ class FacebookRequests
      * @return array
      * @throws FacebookException
      */
-    private static function handleResponse(RequestResponse $response)
+    private static function handleResponse(RequestResponse $response): array
     {
         // parse response
         $data = self::parseResponse($response->getBody());
