@@ -20,17 +20,14 @@ class FacebookApps
      * @var string
      */
     private $id;
-
     /**
      * @var string
      */
     private $secret;
-
     /**
      * @var string
      */
     private $accessToken;
-
     /**
      * @var DebugTokenVo[]
      */
@@ -40,7 +37,7 @@ class FacebookApps
      * @param string $id
      * @param string $secret
      */
-    public function __construct($id, $secret)
+    public function __construct(string $id, string $secret)
     {
         $this->id = $id;
         $this->secret = $secret;
@@ -49,7 +46,7 @@ class FacebookApps
     /**
      * @return string
      */
-    public function getId()
+    public function getId(): string
     {
         return $this->id;
     }
@@ -57,7 +54,7 @@ class FacebookApps
     /**
      * @return string
      */
-    public function getSecret()
+    public function getSecret(): string
     {
         return $this->secret;
     }
@@ -66,7 +63,7 @@ class FacebookApps
      * @return string
      * @throws FacebookException
      */
-    public function getAccessToken()
+    public function getAccessToken(): string
     {
         if (empty($this->accessToken) === false)
         {
@@ -81,7 +78,7 @@ class FacebookApps
      *
      * @return FacebookApps
      */
-    public function setAccessToken($accessToken)
+    public function setAccessToken(string $accessToken): self
     {
         $this->accessToken = $accessToken;
 
@@ -91,8 +88,9 @@ class FacebookApps
     /**
      * @return FacebookApps
      * @throws FacebookException
+     * @throws \Simplon\Request\RequestException
      */
-    public function requestAccessToken()
+    public function requestAccessToken(): self
     {
         $url = Helper::urlRender(
             [FacebookConstants::URL_GRAPH, FacebookConstants::PATH_OAUTH_ACCESSTOKEN]
@@ -119,8 +117,9 @@ class FacebookApps
      *
      * @return string
      * @throws FacebookException
+     * @throws \Simplon\Request\RequestException
      */
-    public function requestLongTermAccessToken($accessToken)
+    public function requestLongTermAccessToken(string $accessToken): string
     {
         $url = Helper::urlRender(
             [FacebookConstants::URL_GRAPH, FacebookConstants::PATH_OAUTH_ACCESSTOKEN]
@@ -144,13 +143,35 @@ class FacebookApps
     }
 
     /**
+     * @param string $endpoint
+     * @param array $params
+     * @param string $requestType
+     *
+     * @return array
+     * @throws FacebookException
+     */
+    public function requestRawData(string $endpoint, array $params = [], string $requestType = 'get'): array
+    {
+        $url = Helper::urlRender(
+            [FacebookConstants::URL_GRAPH, '/' . trim($endpoint, '/')]
+        );
+
+        if (method_exists(FacebookRequests::class, $requestType))
+        {
+            return FacebookRequests::$requestType($url, $params);
+        }
+
+        throw new FacebookException('request type "' . $requestType . '" is not available');
+    }
+
+    /**
      * @param string $type
      * @param array $object
      *
      * @return string
      * @throws FacebookException
      */
-    public function storyObjectCreate($type, array $object)
+    public function storyObjectCreate(string $type, array $object): string
     {
         $type = strtolower($type);
 
@@ -184,8 +205,9 @@ class FacebookApps
      *
      * @return array
      * @throws FacebookException
+     * @throws \Simplon\Request\RequestException
      */
-    public function storyObjectGet($objectId)
+    public function storyObjectGet(string $objectId): array
     {
         $url = Helper::urlRender(
             [FacebookConstants::URL_GRAPH, FacebookConstants::PATH_GRAPH_ITEM],
@@ -195,7 +217,7 @@ class FacebookApps
 
         $response = FacebookRequests::get($url);
 
-        return CastAway::toArray(json_decode($response, true));
+        return $response;
     }
 
     /**
@@ -204,7 +226,7 @@ class FacebookApps
      * @return bool
      * @throws FacebookException
      */
-    public function storyObjectDelete($objectId)
+    public function storyObjectDelete(string $objectId): bool
     {
         $url = Helper::urlRender(
             [FacebookConstants::URL_GRAPH, FacebookConstants::PATH_GRAPH_ITEM],
@@ -228,7 +250,7 @@ class FacebookApps
      * @return SignedRequestVo
      * @throws FacebookException
      */
-    public function parseSignedRequest($signedRequest)
+    public function parseSignedRequest(string $signedRequest): SignedRequestVo
     {
         $base64Decode = function ($input)
         {
@@ -258,8 +280,9 @@ class FacebookApps
      *
      * @return DebugTokenVo
      * @throws FacebookException
+     * @throws \Simplon\Request\RequestException
      */
-    public function getDebugTokenVo($accessToken, $refresh = false)
+    public function getDebugTokenVo(string $accessToken, bool $refresh = false): DebugTokenVo
     {
         if ($refresh === true || isset($this->debugTokens[$accessToken]) === false)
         {
@@ -274,8 +297,9 @@ class FacebookApps
      *
      * @return DebugTokenVo
      * @throws FacebookException
+     * @throws \Simplon\Request\RequestException
      */
-    private function debugAccessToken($inputToken)
+    private function debugAccessToken(string $inputToken): DebugTokenVo
     {
         $url = Helper::urlRender(
             [

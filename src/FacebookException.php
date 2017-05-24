@@ -18,7 +18,7 @@ class FacebookException extends \Exception
      * @param int $code
      * @param array $apiErrors
      */
-    public function __construct($message, $code = 0, array $apiErrors = [])
+    public function __construct(string $message, int $code = 0, array $apiErrors = [])
     {
         $this->message = $message;
         $this->code = $code;
@@ -28,7 +28,7 @@ class FacebookException extends \Exception
     /**
      * @return array
      */
-    public function getDataArray()
+    public function getDataArray(): array
     {
         return [
             'code'    => $this->getCode(),
@@ -40,7 +40,7 @@ class FacebookException extends \Exception
     /**
      * @return string
      */
-    public function getDataJson()
+    public function getDataJson(): string
     {
         return json_encode($this->getDataArray());
     }

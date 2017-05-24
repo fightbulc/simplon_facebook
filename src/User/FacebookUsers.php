@@ -28,22 +28,18 @@ class FacebookUsers
      * @var FacebookApps
      */
     private $facebookApps;
-
     /**
      * @var FacebookPosts
      */
     private $facebookPosts;
-
     /**
      * @var FacebookPhotos
      */
     private $facebookPhotos;
-
     /**
      * @var string
      */
     private $accessToken;
-
     /**
      * @var string
      */
@@ -62,25 +58,26 @@ class FacebookUsers
     }
 
     /**
-     * @return string
-     * @throws FacebookException
+     * @return null|string
      */
-    public function getAccessToken()
+    public function getAccessToken(): ?string
     {
         if ($this->accessToken !== null)
         {
             return CastAway::toString($this->accessToken);
         }
 
-        throw new FacebookException('Missing user access token');
+        return null;
     }
 
     /**
      * @param string $accessToken
      *
      * @return FacebookUsers
+     * @throws FacebookException
+     * @throws \Simplon\Request\RequestException
      */
-    public function setAccessToken($accessToken)
+    public function setAccessToken(string $accessToken): self
     {
         $this->accessToken = $accessToken;
 
@@ -88,23 +85,23 @@ class FacebookUsers
         $this->userId = $this
             ->getFacebookApps()
             ->getDebugTokenVo($accessToken)
-            ->getUserId();
+            ->getUserId()
+        ;
 
         return $this;
     }
 
     /**
-     * @return string
-     * @throws FacebookException
+     * @return null|string
      */
-    public function getUserId()
+    public function getUserId(): ?string
     {
         if (empty($this->userId) === false)
         {
             return CastAway::toString($this->userId);
         }
 
-        throw new FacebookException('Missing user id');
+        return null;
     }
 
     /**
@@ -117,7 +114,7 @@ class FacebookUsers
      *
      * @return string
      */
-    public function getUrlAuthentication($uriRedirect, array $scope = [], $responseType = 'code')
+    public function getUrlAuthentication(string $uriRedirect, array $scope = [], string $responseType = 'code'): string
     {
         $params = [
             'client_id'     => $this->getFacebookApps()->getId(),
@@ -140,8 +137,9 @@ class FacebookUsers
      *
      * @return FacebookUsers
      * @throws FacebookException
+     * @throws \Simplon\Request\RequestException
      */
-    public function requestAccessTokenByCode($code, $uriRedirect)
+    public function requestAccessTokenByCode(string $code, string $uriRedirect): self
     {
         // remove possible hash-tag value
         $code = preg_replace('/#.*?$/', '', $code);
@@ -170,8 +168,9 @@ class FacebookUsers
     /**
      * @return array
      * @throws FacebookException
+     * @throws \Simplon\Request\RequestException
      */
-    public function getPermissions()
+    public function getPermissions(): array
     {
         $url = Helper::urlRender(
             [FacebookConstants::URL_GRAPH, FacebookConstants::PATH_ME_PERMISSIONS]
@@ -193,19 +192,24 @@ class FacebookUsers
 
     /**
      * @return bool
+     * @throws FacebookException
+     * @throws \Simplon\Request\RequestException
      */
-    public function isShortTermAccessToken()
+    public function isShortTermAccessToken(): bool
     {
         return $this
             ->getFacebookApps()
             ->getDebugTokenVo($this->getAccessToken(), true)
-            ->isShortTermToken();
+            ->isShortTermToken()
+            ;
     }
 
     /**
      * @return FacebookUsers
+     * @throws FacebookException
+     * @throws \Simplon\Request\RequestException
      */
-    public function getLongTermAccessToken()
+    public function getLongTermAccessToken(): self
     {
         if ($this->isShortTermAccessToken() === true)
         {
@@ -218,8 +222,9 @@ class FacebookUsers
     /**
      * @return FacebookUsers
      * @throws FacebookException
+     * @throws \Simplon\Request\RequestException
      */
-    public function requestLongTermAccessToken()
+    public function requestLongTermAccessToken(): self
     {
         $url = Helper::urlRender(
             [FacebookConstants::URL_GRAPH, FacebookConstants::PATH_OAUTH_ACCESSTOKEN]
@@ -245,8 +250,9 @@ class FacebookUsers
     /**
      * @return FacebookUserDataVo
      * @throws FacebookException
+     * @throws \Simplon\Request\RequestException
      */
-    public function getUserData()
+    public function getUserData(): FacebookUserDataVo
     {
         $url = Helper::urlRender(
             [FacebookConstants::URL_GRAPH, FacebookConstants::PATH_ME]
@@ -261,14 +267,16 @@ class FacebookUsers
 
         return (new FacebookUserDataVo())
             ->setData($response)
-            ->setAccessToken($this->getAccessToken());
+            ->setAccessToken($this->getAccessToken())
+            ;
     }
 
     /**
-     * @return Vo\FacebookUserFriendVo[]
+     * @return FacebookUserFriendVo[]
      * @throws FacebookException
+     * @throws \Simplon\Request\RequestException
      */
-    public function getFriends()
+    public function getFriends(): array
     {
         $params = [
             'access_token' => $this->getAccessToken(),
@@ -294,9 +302,11 @@ class FacebookUsers
      * The following user access token should have: manage_pages (extended permissions)
      * @link https://developers.facebook.com/docs/graph-api/reference/user/accounts/
      *
-     * @return FacebookUserAccountVo[]|bool
+     * @return null|FacebookUserAccountVo[]
+     * @throws FacebookException
+     * @throws \Simplon\Request\RequestException
      */
-    public function getAccountsData()
+    public function getAccountsData(): ?array
     {
         $url = Helper::urlRender(
             [FacebookConstants::URL_GRAPH, FacebookConstants::PATH_ME_ACCOUNTS]
@@ -319,7 +329,7 @@ class FacebookUsers
             return $voMany;
         }
 
-        return false;
+        return null;
     }
 
     /**
@@ -330,7 +340,7 @@ class FacebookUsers
      * @return string
      * @throws FacebookException
      */
-    public function storyCreate($actionType, $objectType, $objectValue)
+    public function storyCreate(string $actionType, string $objectType, string $objectValue): string
     {
         $actionType = strtolower($actionType);
         $objectType = strtolower($objectType);
@@ -366,7 +376,7 @@ class FacebookUsers
      * @return bool
      * @throws FacebookException
      */
-    public function storyDelete($storyId)
+    public function storyDelete(string $storyId): bool
     {
         $url = Helper::urlRender(
             [FacebookConstants::URL_GRAPH, FacebookConstants::PATH_GRAPH_ITEM],
@@ -390,7 +400,7 @@ class FacebookUsers
      * @return string
      * @throws FacebookException
      */
-    public function feedCreate(FacebookPostVo $facebookPostVo)
+    public function feedCreate(FacebookPostVo $facebookPostVo): string
     {
         return $this
             ->getFacebookPosts()
@@ -398,7 +408,8 @@ class FacebookUsers
                 $this->getAccessToken(),
                 $this->getUserId(),
                 $facebookPostVo
-            );
+            )
+            ;
     }
 
     /**
@@ -407,14 +418,15 @@ class FacebookUsers
      * @return bool
      * @throws FacebookException
      */
-    public function feedUpdate(FacebookPostVo $facebookPostVo)
+    public function feedUpdate(FacebookPostVo $facebookPostVo): bool
     {
         return $this
             ->getFacebookPosts()
             ->update(
                 $this->getAccessToken(),
                 $facebookPostVo
-            );
+            )
+            ;
     }
 
     /**
@@ -423,11 +435,12 @@ class FacebookUsers
      * @return bool
      * @throws FacebookException
      */
-    public function feedDelete($postId)
+    public function feedDelete(string $postId): bool
     {
         return $this
             ->getFacebookPosts()
-            ->delete($this->getAccessToken(), $postId);
+            ->delete($this->getAccessToken(), $postId)
+            ;
     }
 
     /**
@@ -436,7 +449,7 @@ class FacebookUsers
      * @return null|string
      * @throws FacebookException
      */
-    public function photoCreate(FacebookPhotoVo $facebookPhotoVo)
+    public function photoCreate(FacebookPhotoVo $facebookPhotoVo): ?string
     {
         return $this
             ->getFacebookPhotos()
@@ -444,7 +457,8 @@ class FacebookUsers
                 $this->getAccessToken(),
                 $this->getUserId(),
                 $facebookPhotoVo
-            );
+            )
+            ;
     }
 
     /**
@@ -453,17 +467,18 @@ class FacebookUsers
      * @return bool
      * @throws FacebookException
      */
-    public function photoDelete($photoId)
+    public function photoDelete(string $photoId): bool
     {
         return $this
             ->getFacebookPhotos()
-            ->delete($this->getAccessToken(), $photoId);
+            ->delete($this->getAccessToken(), $photoId)
+            ;
     }
 
     /**
      * @return FacebookApps
      */
-    private function getFacebookApps()
+    private function getFacebookApps(): FacebookApps
     {
         return $this->facebookApps;
     }
@@ -471,7 +486,7 @@ class FacebookUsers
     /**
      * @return FacebookPosts
      */
-    private function getFacebookPosts()
+    private function getFacebookPosts(): FacebookPosts
     {
         return $this->facebookPosts;
     }
@@ -479,7 +494,7 @@ class FacebookUsers
     /**
      * @return FacebookPhotos
      */
-    private function getFacebookPhotos()
+    private function getFacebookPhotos(): FacebookPhotos
     {
         return $this->facebookPhotos;
     }
