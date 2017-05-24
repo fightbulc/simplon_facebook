@@ -133,13 +133,13 @@ class FacebookUsers
 
     /**
      * @param string $code
-     * @param string $uriRedirect
+     * @param string $oauthUriRedirect
      *
      * @return FacebookUsers
      * @throws FacebookException
      * @throws \Simplon\Request\RequestException
      */
-    public function requestAccessTokenByCode(string $code, string $uriRedirect): self
+    public function requestAccessTokenByCode(string $code, string $oauthUriRedirect): self
     {
         // remove possible hash-tag value
         $code = preg_replace('/#.*?$/', '', $code);
@@ -151,7 +151,7 @@ class FacebookUsers
         $params = [
             'client_id'     => $this->getFacebookApps()->getId(),
             'client_secret' => $this->getFacebookApps()->getSecret(),
-            'redirect_uri'  => Helper::urlTrim($uriRedirect) . '/',
+            'redirect_uri'  => Helper::urlTrim($oauthUriRedirect) . '/',
             'code'          => $code,
         ];
 
