@@ -1,150 +1,91 @@
 <?php
 
-namespace Simplon\Facebook\User\Vo;
+namespace Simplon\Facebook\User\Data;
 
-use Simplon\Helper\DataSetter;
+use Simplon\Helper\Data\Data;
 
 /**
- * FacebookUserDataVo
- * @package Simplon\Facebook\User\Vo
- * @author Tino Ehrich (tino@bigpun.me)
+ * @package Simplon\Facebook\User\Data
  */
-class FacebookUserDataVo
+class UserData extends Data
 {
     /**
      * @var array
      */
-    private $data;
-
+    protected $data;
     /**
      * @var string
      */
-    private $accessToken;
-
+    protected $accessToken;
     /**
      * @var string
      */
-    private $id;
-
+    protected $id;
     /**
      * @var string
      */
-    private $username;
-
+    protected $username;
     /**
      * @var string
      */
-    private $firstName;
-
+    protected $firstName;
     /**
      * @var string
      */
-    private $middleName;
-
+    protected $middleName;
     /**
      * @var string
      */
-    private $lastName;
-
+    protected $lastName;
     /**
      * @var string
      */
-    private $fullName;
-
+    protected $name;
     /**
      * @var string
      */
-    private $email;
-
+    protected $email;
     /**
      * @var string
      */
-    private $locale;
-
+    protected $locale;
     /**
      * @var string
      */
-    private $location;
-
+    protected $location;
     /**
      * @var string
      */
-    private $gender;
-
+    protected $gender;
     /**
      * @var array
      */
-    private $ageRange;
-
+    protected $ageRange;
     /**
      * @var string
      */
-    private $urlProfile;
-
+    protected $link;
     /**
      * @var string
      */
-    private $birthday;
-
+    protected $birthday;
     /**
      * @var string
      */
-    private $updatedAt;
-
+    protected $updatedAt;
     /**
      * @var int
      */
-    private $timezone;
-
+    protected $timezone;
     /**
      * @var bool
      */
-    private $verified;
-
-    /**
-     * @param array $data
-     *
-     * @return FacebookUserDataVo
-     */
-    public function setData(array $data)
-    {
-        (new DataSetter())
-            ->assignField('access_token', function ($val) { $this->setAccessToken($val); })
-            ->assignField('id', function ($val) { $this->setId($val); })
-            ->assignField('username', function ($val) { $this->setUsername($val); })
-            ->assignField('first_name', function ($val) { $this->setFirstName($val); })
-            ->assignField('middle_name', function ($val) { $this->setMiddleName($val); })
-            ->assignField('last_name', function ($val) { $this->setLastName($val); })
-            ->assignField('name', function ($val) { $this->setFullName($val); })
-            ->assignField('email', function ($val) { $this->setEmail($val); })
-            ->assignField('locale', function ($val) { $this->setLocale($val); })
-            ->assignField('location', function ($val) { $this->setLocation($val); })
-            ->assignField('gender', function ($val) { $this->setGender($val); })
-            ->assignField('age_range', function ($val) { $this->setAgeRange($val); })
-            ->assignField('link', function ($val) { $this->setUrlProfile($val); })
-            ->assignField('birthday', function ($val) { $this->setBirthday($val); })
-            ->assignField('updated_time', function ($val) { $this->setUpdatedAt($val); })
-            ->assignField('timezone', function ($val) { $this->setTimezone($val); })
-            ->assignField('verified', function ($val) { $this->setVerified($val); })
-            ->applyOn($data);
-
-        $this->setRawData($data);
-
-        return $this;
-    }
-
-    /**
-     * @return array
-     */
-    public function toArray()
-    {
-        return (array)$this->data;
-    }
+    protected $verified;
 
     /**
      * @param string $accessToken
      *
-     * @return FacebookUserDataVo
+     * @return UserData
      */
     public function setAccessToken($accessToken)
     {
@@ -167,7 +108,7 @@ class FacebookUserDataVo
     /**
      * @param string $email
      *
-     * @return FacebookUserDataVo
+     * @return UserData
      */
     public function setEmail($email)
     {
@@ -187,7 +128,7 @@ class FacebookUserDataVo
     /**
      * @param string $firstName
      *
-     * @return FacebookUserDataVo
+     * @return UserData
      */
     public function setFirstName($firstName)
     {
@@ -215,7 +156,7 @@ class FacebookUserDataVo
     /**
      * @param string $middleName
      *
-     * @return FacebookUserDataVo
+     * @return UserData
      */
     public function setMiddleName($middleName)
     {
@@ -227,11 +168,11 @@ class FacebookUserDataVo
     /**
      * @param string $fullName
      *
-     * @return FacebookUserDataVo
+     * @return UserData
      */
-    public function setFullName($fullName)
+    public function setName($fullName)
     {
-        $this->fullName = $fullName;
+        $this->name = $fullName;
 
         return $this;
     }
@@ -239,15 +180,15 @@ class FacebookUserDataVo
     /**
      * @return string
      */
-    public function getFullName()
+    public function getName()
     {
-        return (string)$this->fullName;
+        return (string)$this->name;
     }
 
     /**
      * @param string $gender
      *
-     * @return FacebookUserDataVo
+     * @return UserData
      */
     public function setGender($gender)
     {
@@ -267,7 +208,7 @@ class FacebookUserDataVo
     /**
      * @param string $id
      *
-     * @return FacebookUserDataVo
+     * @return UserData
      */
     public function setId($id)
     {
@@ -287,7 +228,7 @@ class FacebookUserDataVo
     /**
      * @param string $lastName
      *
-     * @return FacebookUserDataVo
+     * @return UserData
      */
     public function setLastName($lastName)
     {
@@ -307,7 +248,7 @@ class FacebookUserDataVo
     /**
      * @param string $locale
      *
-     * @return FacebookUserDataVo
+     * @return UserData
      */
     public function setLocale($locale)
     {
@@ -327,11 +268,11 @@ class FacebookUserDataVo
     /**
      * @param string $urlProfile
      *
-     * @return FacebookUserDataVo
+     * @return UserData
      */
-    public function setUrlProfile($urlProfile)
+    public function setLink($urlProfile)
     {
-        $this->urlProfile = $urlProfile;
+        $this->link = $urlProfile;
 
         return $this;
     }
@@ -339,15 +280,15 @@ class FacebookUserDataVo
     /**
      * @return string
      */
-    public function getUrlProfile()
+    public function getLink()
     {
-        return (string)$this->urlProfile;
+        return (string)$this->link;
     }
 
     /**
      * @param int $timezone
      *
-     * @return FacebookUserDataVo
+     * @return UserData
      */
     public function setTimezone($timezone)
     {
@@ -367,7 +308,7 @@ class FacebookUserDataVo
     /**
      * @param string $updatedTime
      *
-     * @return FacebookUserDataVo
+     * @return UserData
      */
     public function setUpdatedAt($updatedTime)
     {
@@ -387,7 +328,7 @@ class FacebookUserDataVo
     /**
      * @param string $username
      *
-     * @return FacebookUserDataVo
+     * @return UserData
      */
     public function setUsername($username)
     {
@@ -407,7 +348,7 @@ class FacebookUserDataVo
     /**
      * @param string $verified
      *
-     * @return FacebookUserDataVo
+     * @return UserData
      */
     public function setVerified($verified)
     {
@@ -435,9 +376,9 @@ class FacebookUserDataVo
     /**
      * @param string $rawData
      *
-     * @return FacebookUserDataVo
+     * @return UserData
      */
-    private function setRawData($rawData)
+    protected function setRawData($rawData)
     {
         $this->data = $rawData;
 
@@ -481,7 +422,7 @@ class FacebookUserDataVo
     /**
      * @param array $ageRange
      *
-     * @return FacebookUserDataVo
+     * @return UserData
      */
     public function setAgeRange($ageRange)
     {
@@ -501,7 +442,7 @@ class FacebookUserDataVo
     /**
      * @param string $location
      *
-     * @return FacebookUserDataVo
+     * @return UserData
      */
     public function setLocation($location)
     {
@@ -521,7 +462,7 @@ class FacebookUserDataVo
     /**
      * @param string $birthday
      *
-     * @return FacebookUserDataVo
+     * @return UserData
      */
     public function setBirthday($birthday)
     {

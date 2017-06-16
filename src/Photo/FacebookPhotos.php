@@ -5,12 +5,10 @@ namespace Simplon\Facebook\Photo;
 use Simplon\Facebook\FacebookConstants;
 use Simplon\Facebook\FacebookException;
 use Simplon\Facebook\FacebookRequests;
-use Simplon\Facebook\Photo\Vo\FacebookPhotoVo;
-use Simplon\Helper\CastAway;
-use Simplon\Helper\Helper;
+use Simplon\Facebook\Photo\Data\PhotoCreateData;
+use Simplon\Facebook\Photo\Data\PhotoCreateResponseData;
 
 /**
- * Class FacebookPhotos
  * @package Simplon\Facebook\Photo
  */
 class FacebookPhotos
@@ -18,24 +16,22 @@ class FacebookPhotos
     /**
      * @param string $accessToken
      * @param string $edgeId
-     * @param FacebookPhotoVo $facebookPhotoVo
+     * @param PhotoCreateData $photoCreateData
      *
-     * @return null|string
+     * @return PhotoCreateResponseData
      * @throws FacebookException
      */
-    public function create($accessToken, $edgeId, FacebookPhotoVo $facebookPhotoVo)
+    public function create(string $accessToken, string $edgeId, PhotoCreateData $photoCreateData): PhotoCreateResponseData
     {
-        $requestUrl = Helper::urlRender(
-            [FacebookConstants::URL_GRAPH, FacebookConstants::PATH_PHOTO_EDGE],
-            ['edgeId' => $edgeId],
-            ['access_token' => $accessToken]
-        );
+        $placeholders = ['edge_id' => $edgeId];
+        $queryParams = ['access_token' => $accessToken];
+        $path = FacebookRequests::buildPath(FacebookConstants::PATH_PHOTO_EDGE, $placeholders, $queryParams);
 
-        $response = FacebookRequests::post($requestUrl, $facebookPhotoVo->toArray());
+        $response = FacebookRequests::post($path, $photoCreateData->toArray());
 
         if (empty($response['id']) === false)
         {
-            return CastAway::toString($response['id']);
+            return (new PhotoCreateResponseData())->fromArray($response);
         }
 
         throw new FacebookException('Could not create photo');
@@ -48,15 +44,14 @@ class FacebookPhotos
      * @return bool
      * @throws FacebookException
      */
-    public function delete($accessToken, $photoId)
+    public function delete(string $accessToken, string $photoId): bool
     {
-        $url = Helper::urlRender(
-            [FacebookConstants::URL_GRAPH, FacebookConstants::PATH_GRAPH_ITEM],
-            ['id' => $photoId],
-            ['access_token' => $accessToken]
-        );
+        $placeholders = ['id' => $photoId];
+        $queryParams = ['access_token' => $accessToken];
 
-        $response = FacebookRequests::delete($url);
+        $response = FacebookRequests::delete(
+            FacebookRequests::buildPath(FacebookConstants::PATH_GRAPH_ITEM, $placeholders, $queryParams)
+        );
 
         if (empty($response['success']) === false)
         {

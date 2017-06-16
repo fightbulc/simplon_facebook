@@ -4,64 +4,102 @@ namespace Simplon\Facebook;
 
 use Simplon\Request\Request;
 use Simplon\Request\RequestResponse;
+use Simplon\Url\Url;
 
 /**
- * Class FacebookRequests
  * @package Simplon\Facebook
  */
 class FacebookRequests
 {
     /**
-     * @param string $url
+     * @param string $path
      * @param array $params
      *
      * @return array
      * @throws FacebookException
      * @throws \Simplon\Request\RequestException
      */
-    public static function get(string $url, array $params = []): array
+    public static function get(string $path, array $params = []): array
     {
         return self::handleResponse(
-            (new Request())->get(self::replaceApiVersion($url), $params)
+            (new Request())->get(self::buildGraphUrl($path), $params)
         );
     }
 
     /**
-     * @param string $url
+     * @param string $path
      * @param array $params
      *
      * @return array
      * @throws FacebookException
      */
-    public static function post(string $url, array $params = []): array
+    public static function post(string $path, array $params = []): array
     {
         return self::handleResponse(
-            (new Request())->post(self::replaceApiVersion($url), $params)
+            (new Request())->post(self::buildGraphUrl($path), $params)
         );
     }
 
     /**
-     * @param string $url
+     * @param string $path
      * @param array $params
      *
      * @return array
      * @throws FacebookException
      */
-    public static function delete(string $url, array $params = []): array
+    public static function delete(string $path, array $params = []): array
     {
         return self::handleResponse(
-            (new Request())->delete(self::replaceApiVersion($url), $params)
+            (new Request())->delete(self::buildGraphUrl($path), $params)
         );
     }
 
     /**
-     * @param string $url
+     * @param string $path
+     * @param array $placeholders
+     * @param array $queryParams
      *
      * @return string
      */
-    private static function replaceApiVersion(string $url): string
+    public static function buildPath(string $path, array $placeholders = [], array $queryParams = []): string
     {
-        return str_replace('{api-version-string}', 'v' . FacebookConstants::getVersion(), $url);
+        if (!empty($placeholders))
+        {
+            foreach ($placeholders as $key => $val)
+            {
+                $path = str_replace('{' . $key . '}', $val, $path);
+            }
+        }
+
+        if (!empty($queryParams))
+        {
+            $path = (new Url($path))->withQueryParams($queryParams)->__toString();
+        }
+
+        return $path;
+    }
+
+    /**
+     * @param string $path
+     *
+     * @return Url
+     */
+    public static function buildGraphUrl(string $path): Url
+    {
+        return (new Url(FacebookConstants::URL_GRAPH))
+            ->withPath('v' . FacebookConstants::getVersion())
+            ->withTrailPath($path)
+            ;
+    }
+
+    /**
+     * @param string $path
+     *
+     * @return Url
+     */
+    public static function buildFacebookUrl(string $path): Url
+    {
+        return (new Url(FacebookConstants::URL_FACEBOOK))->withTrailPath($path);
     }
 
     /**

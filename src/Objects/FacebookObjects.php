@@ -6,8 +6,7 @@ use Simplon\Facebook\App\FacebookApps;
 use Simplon\Facebook\FacebookConstants;
 use Simplon\Facebook\FacebookException;
 use Simplon\Facebook\FacebookRequests;
-use Simplon\Facebook\Objects\Vo\FacebookObjectVo;
-use Simplon\Helper\Helper;
+use Simplon\Facebook\Objects\Data\ObjectData;
 
 /**
  * @package Simplon\Facebook\Objects
@@ -28,12 +27,42 @@ class FacebookObjects
     }
 
     /**
+     * @param string $id
+     * @param array|null $fields
+     *
+     * @return null|ObjectData
+     * @throws FacebookException
+     * @throws \Simplon\Request\RequestException
+     */
+    public function read(string $id, ?array $fields = null): ?ObjectData
+    {
+        $queryParams = [
+            'id'           => $id,
+            'access_token' => $this->app->getAppAccessToken(),
+        ];
+
+        if ($fields)
+        {
+            $queryParams['fields'] = implode(',', $fields);
+        }
+
+        $response = FacebookRequests::get(FacebookConstants::PATH_OBJECT, $queryParams);
+
+        if (isset($response['id']))
+        {
+            return (new ObjectData())->fromArray($response);
+        }
+
+        return null;
+    }
+
+    /**
      * @param string $url
      *
-     * @return FacebookObjectVo
+     * @return ObjectData
      * @throws FacebookException
      */
-    public function createCrawl($url)
+    public function createCrawl(string $url): ObjectData
     {
         return $this->crawl($url);
     }
@@ -41,10 +70,10 @@ class FacebookObjects
     /**
      * @param string $objectId
      *
-     * @return FacebookObjectVo
+     * @return ObjectData
      * @throws FacebookException
      */
-    public function updateCrawl($objectId)
+    public function updateCrawl(string $objectId): ObjectData
     {
         return $this->crawl($objectId);
     }
@@ -52,23 +81,23 @@ class FacebookObjects
     /**
      * @param string $object
      *
-     * @return FacebookObjectVo
+     * @return ObjectData
      * @throws FacebookException
      */
-    protected function crawl($object)
+    protected function crawl(string $object): ObjectData
     {
-        $url = Helper::urlRender(
-            [FacebookConstants::URL_GRAPH, FacebookConstants::PATH_OBJECT],
-            [],
-            [
-                'id'           => $object,
-                'scrape'       => true,
-                'access_token' => $this->app->getAccessToken(),
-            ]
+        $placeholders = [];
+
+        $queryParams = [
+            'id'           => $object,
+            'scrape'       => true,
+            'access_token' => $this->app->getAppAccessToken(),
+        ];
+
+        $response = FacebookRequests::post(
+            FacebookRequests::buildPath(FacebookConstants::PATH_OBJECT, $placeholders, $queryParams)
         );
 
-        $response = FacebookRequests::post($url);
-
-        return (new FacebookObjectVo())->setData($response);
+        return (new ObjectData())->fromArray($response);
     }
 }

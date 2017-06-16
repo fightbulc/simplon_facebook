@@ -138,7 +138,7 @@ $app = new FacebookApps($appId, $appSecret);
 $app->requestAccessToken();
 
 // now we can have a look at the attached data for the user access token
-$debugTokenVo = $app->getDebugTokenVo($userAccessToken); // have a look at the class DebugTokenVo
+$debugTokenVo = $app->getDebugTokenVo($userAccessToken); // have a look at the class DebugTokenData
 
 // is this a short term token?
 $debugTokenVo->isShortTermToken(); // bool

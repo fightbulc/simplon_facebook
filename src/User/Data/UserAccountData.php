@@ -1,45 +1,37 @@
 <?php
 
-namespace Simplon\Facebook\User\Vo;
+namespace Simplon\Facebook\User\Data;
 
-use Simplon\Helper\DataIoVoTrait;
+use Simplon\Helper\CastAway;
+use Simplon\Helper\Data\Data;
 
 /**
- * FacebookUserAccountVo
- * @package Simplon\Facebook\User\Vo
- * @author  Tino Ehrich (tino@bigpun.me)
+ * @package Simplon\Facebook\User\Data
  */
-class FacebookUserAccountVo
+class UserAccountData extends Data
 {
-    use DataIoVoTrait;
-
     const PERM_ADMINISTER = 'ADMINISTER';
 
     /**
      * @var string
      */
     protected $id;
-
     /**
      * @var array
      */
     protected $perms;
-
     /**
      * @var string
      */
     protected $accessToken;
-
     /**
      * @var string
      */
     protected $name;
-
     /**
      * @var string
      */
     protected $category;
-
     /**
      * @var array
      */
@@ -48,9 +40,9 @@ class FacebookUserAccountVo
     /**
      * @param string $accessToken
      *
-     * @return FacebookUserAccountVo
+     * @return UserAccountData
      */
-    public function setAccessToken($accessToken)
+    public function setAccessToken(string $accessToken): self
     {
         $this->accessToken = $accessToken;
 
@@ -60,17 +52,17 @@ class FacebookUserAccountVo
     /**
      * @return string
      */
-    public function getAccessToken()
+    public function getAccessToken(): string
     {
-        return (string)$this->accessToken;
+        return CastAway::toString($this->accessToken);
     }
 
     /**
      * @param string $category
      *
-     * @return FacebookUserAccountVo
+     * @return UserAccountData
      */
-    public function setCategory($category)
+    public function setCategory(string $category): self
     {
         $this->category = $category;
 
@@ -80,17 +72,17 @@ class FacebookUserAccountVo
     /**
      * @return string
      */
-    public function getCategory()
+    public function getCategory(): string
     {
-        return (string)$this->category;
+        return CastAway::toString($this->category);
     }
 
     /**
      * @param array $categoryList
      *
-     * @return FacebookUserAccountVo
+     * @return UserAccountData
      */
-    public function setCategoryList($categoryList)
+    public function setCategoryList(array $categoryList): self
     {
         $this->categoryList = $categoryList;
 
@@ -100,15 +92,15 @@ class FacebookUserAccountVo
     /**
      * @return array
      */
-    public function getCategoryList()
+    public function getCategoryList(): array
     {
-        return (array)$this->categoryList;
+        return CastAway::toArray($this->categoryList);
     }
 
     /**
      * @return bool
      */
-    public function hasCategoryList()
+    public function hasCategoryList(): bool
     {
         $categoryList = $this->getCategoryList();
 
@@ -116,36 +108,34 @@ class FacebookUserAccountVo
     }
 
     /**
-     * @return FacebookUserAcountCategoryListVo[]|bool
+     * @return UserAcountCategoryListData[]|null
      */
-    public function getFacebookUserAcountCategoryListVoMany()
+    public function getFacebookUserAcountCategoryListVoMany(): ?array
     {
         $categoryList = $this->getCategoryList();
 
-        if (empty($categoryList))
+        if (!empty($categoryList))
         {
-            return false;
+            /** @var UserAcountCategoryListData[] $data */
+            $data = [];
+
+            foreach ($categoryList as $val)
+            {
+                $data[] = (new UserAcountCategoryListData())->fromArray($val);
+            }
+
+            return $data;
         }
 
-        // --------------------------------------
-
-        /** @var FacebookUserAcountCategoryListVo[] $voMany */
-        $voMany = [];
-
-        foreach ($categoryList as $val)
-        {
-            $voMany[] = (new FacebookUserAcountCategoryListVo())->fromArray($val);
-        }
-
-        return $voMany;
+        return null;
     }
 
     /**
      * @param string $id
      *
-     * @return FacebookUserAccountVo
+     * @return UserAccountData
      */
-    public function setId($id)
+    public function setId(string $id): self
     {
         $this->id = $id;
 
@@ -155,17 +145,17 @@ class FacebookUserAccountVo
     /**
      * @return string
      */
-    public function getId()
+    public function getId(): string
     {
-        return (string)$this->id;
+        return CastAway::toString($this->id);
     }
 
     /**
      * @param string $name
      *
-     * @return FacebookUserAccountVo
+     * @return UserAccountData
      */
-    public function setName($name)
+    public function setName(string $name): self
     {
         $this->name = $name;
 
@@ -175,17 +165,17 @@ class FacebookUserAccountVo
     /**
      * @return string
      */
-    public function getName()
+    public function getName(): string
     {
-        return (string)$this->name;
+        return CastAway::toString($this->name);
     }
 
     /**
      * @param array $perms
      *
-     * @return FacebookUserAccountVo
+     * @return UserAccountData
      */
-    public function setPerms($perms)
+    public function setPerms(array $perms): self
     {
         $this->perms = $perms;
 
@@ -195,9 +185,9 @@ class FacebookUserAccountVo
     /**
      * @return array
      */
-    public function getPerms()
+    public function getPerms(): array
     {
-        return (array)$this->perms;
+        return CastAway::toArray($this->perms);
     }
 
     /**
@@ -205,7 +195,7 @@ class FacebookUserAccountVo
      *
      * @return bool
      */
-    public function hasPerms(array $hasPerms)
+    public function hasPerms(array $hasPerms): bool
     {
         $result = array_intersect($this->getPerms(), $hasPerms);
 

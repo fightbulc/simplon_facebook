@@ -19,7 +19,9 @@
   "require": {
     "php": ">=7.1",
     "simplon/request": "^1.1",
-    "simplon/helper": "^0.12"
+    "simplon/url": "^0.3",
+    "simplon/helper": "^1.0",
+    "dusank/knapsack": "^10.0"
   },
   "autoload": {
     "psr-4": {

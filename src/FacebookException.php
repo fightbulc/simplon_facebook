@@ -3,11 +3,18 @@
 namespace Simplon\Facebook;
 
 /**
- * Class FacebookException
  * @package Simplon\Facebook
  */
 class FacebookException extends \Exception
 {
+    /**
+     * @var string
+     */
+    protected $message;
+    /**
+     * @var int
+     */
+    protected $code;
     /**
      * @var array
      */

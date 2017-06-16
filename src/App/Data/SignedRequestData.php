@@ -1,79 +1,62 @@
 <?php
 
-namespace Simplon\Facebook\App\Vo;
+namespace Simplon\Facebook\App\Data;
 
-use Simplon\Helper\DataSetter;
+use Simplon\Helper\Data\Data;
 
 /**
- * Class SignedRequestVo
- * @package Simplon\Facebook\App\Vo
+ * @package Simplon\Facebook\App\Data
  */
-class SignedRequestVo
+class SignedRequestData extends Data
 {
     /**
      * @var int
      */
-    private $expires;
-
+    protected $expires;
     /**
      * @var int
      */
-    private $issuedAt;
-
+    protected $issuedAt;
     /**
      * @var string
      */
-    private $oauthToken;
-
+    protected $oauthToken;
+    /**
+     * @var array
+     */
+    protected $page;
+    /**
+     * @var array
+     */
+    protected $user;
     /**
      * @var int
      */
-    private $pageId;
-
-    /**
-     * @var bool
-     */
-    private $pageAdmin;
-
-    /**
-     * @var int
-     */
-    private $userId;
-
+    protected $userId;
     /**
      * @var string
      */
     private $userCountry;
-
     /**
      * @var string
      */
     private $userLocale;
-
     /**
      * @var int
      */
     private $userAgeMin;
-
     /**
      * @var int
      */
     private $userAgeMax;
-
     /**
-     * @param array $data
+     * @var int
      */
-    public function __construct(array $data)
-    {
-        (new DataSetter())
-            ->assignField('expires', function ($val) { $this->setExpires($val); })
-            ->assignField('issued_at', function ($val) { $this->setIssuedAt($val); })
-            ->assignField('oauth_token', function ($val) { $this->setOauthToken($val); })
-            ->assignField('page', function ($val) { $this->setPageData($val); })
-            ->assignField('user_id', function ($val) { $this->setUserId($val); })
-            ->assignField('user', function ($val) { $this->setUserData($val); })
-            ->applyOn($data);
-    }
+    private $pageId;
+    /**
+     * @var bool
+     */
+    private $pageAdmin;
 
     /**
      * @return int
@@ -86,7 +69,7 @@ class SignedRequestVo
     /**
      * @param int $expires
      *
-     * @return SignedRequestVo
+     * @return SignedRequestData
      */
     public function setExpires($expires)
     {
@@ -106,7 +89,7 @@ class SignedRequestVo
     /**
      * @param int $issuedAt
      *
-     * @return SignedRequestVo
+     * @return SignedRequestData
      */
     public function setIssuedAt($issuedAt)
     {
@@ -126,7 +109,7 @@ class SignedRequestVo
     /**
      * @param string $oauthToken
      *
-     * @return SignedRequestVo
+     * @return SignedRequestData
      */
     public function setOauthToken($oauthToken)
     {
@@ -154,9 +137,9 @@ class SignedRequestVo
     /**
      * @param array $page
      *
-     * @return SignedRequestVo
+     * @return SignedRequestData
      */
-    public function setPageData(array $page)
+    public function setPage(array $page)
     {
         $this->pageId = $page['id'];
         $this->pageAdmin = $page['admin'];
@@ -199,7 +182,7 @@ class SignedRequestVo
     /**
      * @param int $userId
      *
-     * @return SignedRequestVo
+     * @return SignedRequestData
      */
     public function setUserId($userId)
     {
@@ -211,9 +194,9 @@ class SignedRequestVo
     /**
      * @param array $user
      *
-     * @return SignedRequestVo
+     * @return SignedRequestData
      */
-    public function setUserData(array $user)
+    public function setUser(array $user)
     {
         $this->userCountry = $user['country'];
         $this->userLocale = $user['locale'];

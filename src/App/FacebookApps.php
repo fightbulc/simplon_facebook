@@ -2,16 +2,14 @@
 
 namespace Simplon\Facebook\App;
 
-use Simplon\Facebook\App\Vo\DebugTokenVo;
-use Simplon\Facebook\App\Vo\SignedRequestVo;
+use Simplon\Facebook\App\Data\DebugTokenData;
+use Simplon\Facebook\App\Data\SignedRequestData;
 use Simplon\Facebook\FacebookConstants;
 use Simplon\Facebook\FacebookException;
 use Simplon\Facebook\FacebookRequests;
 use Simplon\Helper\CastAway;
-use Simplon\Helper\Helper;
 
 /**
- * Class FacebookApps
  * @package Simplon\Facebook\App
  */
 class FacebookApps
@@ -27,9 +25,9 @@ class FacebookApps
     /**
      * @var string
      */
-    private $accessToken;
+    private $appAccessToken;
     /**
-     * @var DebugTokenVo[]
+     * @var DebugTokenData[]
      */
     private $debugTokens = [];
 
@@ -63,11 +61,11 @@ class FacebookApps
      * @return string
      * @throws FacebookException
      */
-    public function getAccessToken(): string
+    public function getAppAccessToken(): string
     {
-        if (empty($this->accessToken) === false)
+        if (empty($this->appAccessToken) === false)
         {
-            return CastAway::toString($this->accessToken);
+            return CastAway::toString($this->appAccessToken);
         }
 
         throw new FacebookException('Missing app access token');
@@ -78,9 +76,9 @@ class FacebookApps
      *
      * @return FacebookApps
      */
-    public function setAccessToken(string $accessToken): self
+    public function setAppAccessToken(string $accessToken): self
     {
-        $this->accessToken = $accessToken;
+        $this->appAccessToken = $accessToken;
 
         return $this;
     }
@@ -90,23 +88,17 @@ class FacebookApps
      * @throws FacebookException
      * @throws \Simplon\Request\RequestException
      */
-    public function requestAccessToken(): self
+    public function requestAppAccessToken(): self
     {
-        $url = Helper::urlRender(
-            [FacebookConstants::URL_GRAPH, FacebookConstants::PATH_OAUTH_ACCESSTOKEN]
-        );
-
-        $params = [
+        $response = FacebookRequests::get(FacebookConstants::PATH_OAUTH_ACCESSTOKEN, [
             'client_id'     => $this->getId(),
             'client_secret' => $this->getSecret(),
             'grant_type'    => 'client_credentials',
-        ];
-
-        $response = FacebookRequests::get($url, $params);
+        ]);
 
         if (empty($response['access_token']) === false)
         {
-            return $this->setAccessToken($response['access_token']);
+            return $this->setAppAccessToken($response['access_token']);
         }
 
         throw new FacebookException('Could not retrieve app access token');
@@ -121,18 +113,12 @@ class FacebookApps
      */
     public function requestLongTermAccessToken(string $accessToken): string
     {
-        $url = Helper::urlRender(
-            [FacebookConstants::URL_GRAPH, FacebookConstants::PATH_OAUTH_ACCESSTOKEN]
-        );
-
-        $params = [
+        $response = FacebookRequests::get(FacebookConstants::PATH_OAUTH_ACCESSTOKEN, [
             'client_id'         => $this->getId(),
             'client_secret'     => $this->getSecret(),
             'grant_type'        => 'fb_exchange_token',
             'fb_exchange_token' => $accessToken,
-        ];
-
-        $response = FacebookRequests::get($url, $params);
+        ]);
 
         if (empty($response['access_token']) === false)
         {
@@ -152,13 +138,9 @@ class FacebookApps
      */
     public function requestRawData(string $endpoint, array $params = [], string $requestType = 'get'): array
     {
-        $url = Helper::urlRender(
-            [FacebookConstants::URL_GRAPH, '/' . trim($endpoint, '/')]
-        );
-
         if (method_exists(FacebookRequests::class, $requestType))
         {
-            return FacebookRequests::$requestType($url, $params);
+            return FacebookRequests::$requestType(trim($endpoint, '/'), $params);
         }
 
         throw new FacebookException('request type "' . $requestType . '" is not available');
@@ -180,17 +162,13 @@ class FacebookApps
             throw new FacebookException('Your object type does not seem to be common nor custom');
         }
 
-        $url = Helper::urlRender(
-            [FacebookConstants::URL_GRAPH, FacebookConstants::PATH_APP_STORY_OBJECT_CREATE],
-            ['objectType' => $type],
-            ['access_token' => $this->getAccessToken()]
-        );
+        $placeholders = ['object_type' => $type];
+        $queryParams = ['access_token' => $this->getAppAccessToken()];
+        $path = FacebookRequests::buildPath(FacebookConstants::PATH_APP_STORY_OBJECT_CREATE, $placeholders, $queryParams);
 
-        $params = [
+        $response = FacebookRequests::post($path, [
             'object' => json_encode($object),
-        ];
-
-        $response = FacebookRequests::post($url, $params);
+        ]);
 
         if (empty($response['id']) === false)
         {
@@ -209,13 +187,11 @@ class FacebookApps
      */
     public function storyObjectGet(string $objectId): array
     {
-        $url = Helper::urlRender(
-            [FacebookConstants::URL_GRAPH, FacebookConstants::PATH_GRAPH_ITEM],
-            ['id' => $objectId],
-            ['access_token' => $this->getAccessToken()]
-        );
+        $placeholders = ['id' => $objectId];
+        $queryParams = ['access_token' => $this->getAppAccessToken()];
+        $path = FacebookRequests::buildPath(FacebookConstants::PATH_GRAPH_ITEM, $placeholders, $queryParams);
 
-        $response = FacebookRequests::get($url);
+        $response = FacebookRequests::get($path);
 
         return $response;
     }
@@ -228,13 +204,11 @@ class FacebookApps
      */
     public function storyObjectDelete(string $objectId): bool
     {
-        $url = Helper::urlRender(
-            [FacebookConstants::URL_GRAPH, FacebookConstants::PATH_GRAPH_ITEM],
-            ['id' => $objectId],
-            ['access_token' => $this->getAccessToken()]
-        );
+        $placeholders = ['id' => $objectId];
+        $queryParams = ['access_token' => $this->getAppAccessToken()];
+        $path = FacebookRequests::buildPath(FacebookConstants::PATH_GRAPH_ITEM, $placeholders, $queryParams);
 
-        $response = FacebookRequests::delete($url);
+        $response = FacebookRequests::delete($path);
 
         if (empty($response['success']))
         {
@@ -247,13 +221,12 @@ class FacebookApps
     /**
      * @param string $signedRequest
      *
-     * @return SignedRequestVo
+     * @return SignedRequestData
      * @throws FacebookException
      */
-    public function parseSignedRequest(string $signedRequest): SignedRequestVo
+    public function parseSignedRequest(string $signedRequest): SignedRequestData
     {
-        $base64Decode = function ($input)
-        {
+        $base64Decode = function ($input) {
             return base64_decode(strtr($input, '-_', '+/'));
         };
 
@@ -271,18 +244,18 @@ class FacebookApps
             throw new FacebookException('Failed to parse signed request. Signatures do not match.');
         }
 
-        return new SignedRequestVo($data);
+        return (new SignedRequestData())->fromArray($data);
     }
 
     /**
      * @param string $accessToken
      * @param bool $refresh
      *
-     * @return DebugTokenVo
+     * @return DebugTokenData
      * @throws FacebookException
      * @throws \Simplon\Request\RequestException
      */
-    public function getDebugTokenVo(string $accessToken, bool $refresh = false): DebugTokenVo
+    public function getDebugTokenData(string $accessToken, bool $refresh = false): DebugTokenData
     {
         if ($refresh === true || isset($this->debugTokens[$accessToken]) === false)
         {
@@ -295,30 +268,21 @@ class FacebookApps
     /**
      * @param string $inputToken
      *
-     * @return DebugTokenVo
+     * @return DebugTokenData
      * @throws FacebookException
      * @throws \Simplon\Request\RequestException
      */
-    private function debugAccessToken(string $inputToken): DebugTokenVo
+    private function debugAccessToken(string $inputToken): DebugTokenData
     {
-        $url = Helper::urlRender(
-            [
-                FacebookConstants::URL_GRAPH,
-                FacebookConstants::PATH_DEBUG_TOKEN,
-            ]
-        );
-
-        $params = [
+        $response = FacebookRequests::get(FacebookConstants::PATH_DEBUG_TOKEN, [
             'input_token'  => $inputToken,
-            'access_token' => $this->getAccessToken(),
-        ];
-
-        $response = FacebookRequests::get($url, $params);
+            'access_token' => $this->getAppAccessToken(),
+        ]);
 
         if (empty($response['data']) === false)
         {
-            return (new DebugTokenVo())
-                ->setData($response['data'])
+            return (new DebugTokenData())
+                ->fromArray($response['data'])
                 ->setAccessToken($inputToken)
                 ;
         }

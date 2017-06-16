@@ -6,18 +6,17 @@ use Simplon\Facebook\App\FacebookApps;
 use Simplon\Facebook\FacebookConstants;
 use Simplon\Facebook\FacebookException;
 use Simplon\Facebook\FacebookRequests;
-use Simplon\Facebook\Page\Vo\FacebookPageVo;
+use Simplon\Facebook\Page\Data\PageData;
 use Simplon\Facebook\Photo\FacebookPhotos;
-use Simplon\Facebook\Photo\Vo\FacebookPhotoVo;
+use Simplon\Facebook\Photo\Data\PhotoData;
 use Simplon\Facebook\Post\FacebookPosts;
-use Simplon\Facebook\Post\Vo\FacebookPostVo;
+use Simplon\Facebook\Post\Data\PostData;
 use Simplon\Helper\CastAway;
-use Simplon\Helper\Helper;
+use Simplon\Helper\Data\InstanceData;
+use Simplon\Helper\Instances;
 
 /**
- * FacebookPages
  * @package Simplon\Facebook\Page
- * @author  Tino Ehrich (tino@bigpun.me)
  */
 class FacebookPages
 {
@@ -25,22 +24,10 @@ class FacebookPages
      * @var FacebookApps
      */
     private $facebookApps;
-
-    /**
-     * @var FacebookPosts
-     */
-    private $facebookPosts;
-
-    /**
-     * @var FacebookPhotos
-     */
-    private $facebookPhotos;
-
     /**
      * @var string
      */
     private $accessToken;
-
     /**
      * @var string
      */
@@ -48,21 +35,17 @@ class FacebookPages
 
     /**
      * @param FacebookApps $facebookApps
-     * @param FacebookPosts $facebookPosts
-     * @param FacebookPhotos $facebookPhotos
      */
-    public function __construct(FacebookApps $facebookApps, FacebookPosts $facebookPosts, FacebookPhotos $facebookPhotos)
+    public function __construct(FacebookApps $facebookApps)
     {
         $this->facebookApps = $facebookApps;
-        $this->facebookPosts = $facebookPosts;
-        $this->facebookPhotos = $facebookPhotos;
     }
 
     /**
      * @return string
      * @throws FacebookException
      */
-    public function getAccessToken()
+    public function getAccessToken(): string
     {
         if (empty($this->accessToken) === false)
         {
@@ -76,16 +59,13 @@ class FacebookPages
      * @param string $accessToken
      *
      * @return FacebookPages
+     * @throws FacebookException
+     * @throws \Simplon\Request\RequestException
      */
-    public function setAccessToken($accessToken)
+    public function setAccessToken(string $accessToken): self
     {
         $this->accessToken = $accessToken;
-
-        // read page id from token
-        $this->pageId = $this
-            ->getFacebookApps()
-            ->getDebugTokenVo($accessToken)
-            ->getProfileId();
+        $this->pageId = $this->getFacebookApps()->getDebugTokenData($accessToken)->getProfileId();
 
         return $this;
     }
@@ -105,24 +85,6 @@ class FacebookPages
     }
 
     /**
-     * @param string $uriRedirect
-     *
-     * @return string
-     */
-    public function getUrlPageTabDialog($uriRedirect)
-    {
-        $params = [
-            'app_id'       => $this->getFacebookApps()->getId(),
-            'redirect_uri' => $uriRedirect,
-        ];
-
-        return Helper::urlRender(
-            [FacebookConstants::URL_FACEBOOK, FacebookConstants::PATH_PAGETAB],
-            $params
-        );
-    }
-
-    /**
      * To get a longer-lived page access token, exchange the
      * User access token for a long-lived one, as above, and
      * then request the Page token. The resulting page access
@@ -131,104 +93,83 @@ class FacebookPages
      *
      * @return string
      * @throws FacebookException
+     * @throws \Simplon\Request\RequestException
      */
     public function requestAccessToken()
     {
-        $url = Helper::urlRender(
-            [FacebookConstants::URL_GRAPH, FacebookConstants::PATH_OAUTH_ACCESSTOKEN]
-        );
-
-        $params = [
+        $response = FacebookRequests::get(FacebookConstants::PATH_OAUTH_ACCESSTOKEN, [
             'client_id'     => $this->getFacebookApps()->getId(),
             'client_secret' => $this->getFacebookApps()->getSecret(),
             'grant_type'    => 'client_credentials',
-        ];
-
-        $response = FacebookRequests::get($url, $params);
+        ]);
 
         if (empty($response['access_token']) === false)
         {
-            return (string)$response['access_token'];
+            return CastAway::toString($response['access_token']);
         }
 
         throw new FacebookException('Could not retrieve page access token');
     }
 
     /**
-     * @return FacebookPageVo
+     * @return PageData
      * @throws FacebookException
+     * @throws \Simplon\Request\RequestException
      */
-    public function getPageData()
+    public function getPageData(): PageData
     {
-        $url = Helper::urlRender(
-            [FacebookConstants::URL_GRAPH, FacebookConstants::PATH_GRAPH_ITEM],
-            ['{{id}}' => $this->getPageId()],
-            ['access_token' => $this->getAccessToken()]
+        $placeholders = ['id' => $this->getPageId()];
+        $queryParams = ['access_token' => $this->getAccessToken()];
+
+        $response = FacebookRequests::get(
+            FacebookRequests::buildPath(FacebookConstants::PATH_GRAPH_ITEM, $placeholders, $queryParams)
         );
 
-        $response = FacebookRequests::get($url);
-
-        return (new FacebookPageVo())->setData($response);
+        return (new PageData())->fromArray($response);
     }
 
     /**
-     * @param FacebookPostVo $facebookPostVo
+     * @param PostData $facebookPostVo
      *
-     * @return null|string
+     * @return string
+     * @throws FacebookException
      */
-    public function feedCreate(FacebookPostVo $facebookPostVo)
+    public function feedCreate(PostData $facebookPostVo): string
     {
-        return $this
-            ->getFacebookPosts()
-            ->create(
-                $this->getAccessToken(),
-                $this->getPageId(),
-                $facebookPostVo
-            );
+        return $this->getFacebookPosts()->create($this->getAccessToken(), $this->getPageId(), $facebookPostVo);
     }
 
     /**
-     * @param FacebookPostVo $facebookPostVo
+     * @param PostData $facebookPostVo
      *
      * @return bool
+     * @throws FacebookException
      */
-    public function feedUpdate(FacebookPostVo $facebookPostVo)
+    public function feedUpdate(PostData $facebookPostVo): bool
     {
-        return $this
-            ->getFacebookPosts()
-            ->update(
-                $this->getAccessToken(),
-                $facebookPostVo
-            );
+        return $this->getFacebookPosts()->update($this->getAccessToken(), $facebookPostVo);
     }
 
     /**
      * @param string $postId
      *
      * @return bool|null
+     * @throws FacebookException
      */
-    public function feedDelete($postId)
+    public function feedDelete(string $postId): ?bool
     {
-        return $this
-            ->getFacebookPosts()
-            ->delete($this->getAccessToken(), $postId);
+        return $this->getFacebookPosts()->delete($this->getAccessToken(), $postId);
     }
 
     /**
-     * @param FacebookPhotoVo $facebookPhotoVo
+     * @param PhotoData $facebookPhotoVo
      *
      * @return null|string
      * @throws FacebookException
      */
-    public function photoCreate(FacebookPhotoVo $facebookPhotoVo)
+    public function photoCreate(PhotoData $facebookPhotoVo): ?string
     {
-        return $this
-            ->getFacebookPhotos()
-            ->create(
-                $this->getAccessToken(),
-                $this->getPageId(),
-                $facebookPhotoVo
-            );
+        return $this->getFacebookPhotos()->create($this->getAccessToken(), $this->getPageId(), $facebookPhotoVo);
     }
 
     /**
@@ -237,11 +178,9 @@ class FacebookPages
      * @return bool
      * @throws FacebookException
      */
-    public function photoDelete($photoId)
+    public function photoDelete(string $photoId): bool
     {
-        return $this
-            ->getFacebookPhotos()
-            ->delete($this->getAccessToken(), $photoId);
+        return $this->getFacebookPhotos()->delete($this->getAccessToken(), $photoId);
     }
 
     /**
@@ -250,21 +189,16 @@ class FacebookPages
      * @return bool
      * @throws FacebookException
      */
-    public function addTab($position = null)
+    public function addTab(?int $position = null): bool
     {
-        $url = Helper::urlRender(
-            [FacebookConstants::URL_GRAPH . FacebookConstants::PATH_PAGE_TABS],
-            ['pageId' => $this->getPageId()],
-            ['access_token' => $this->getAccessToken()]
-        );
+        $placeholders = ['page_id' => $this->getPageId()];
+        $queryParams = ['access_token' => $this->getAccessToken()];
+        $path = FacebookRequests::buildPath(FacebookConstants::PATH_PAGE_TABS, $placeholders, $queryParams);
 
-        // tab params
-        $params = [
+        $response = FacebookRequests::post($path, [
             'app_id'   => $this->getFacebookApps()->getId(),
             'position' => $position,
-        ];
-
-        $response = FacebookRequests::post($url, $params);
+        ]);
 
         if (empty($response['success']) === false)
         {
@@ -278,20 +212,15 @@ class FacebookPages
      * @return bool
      * @throws FacebookException
      */
-    public function removeTab()
+    public function removeTab(): bool
     {
-        $url = Helper::urlRender(
-            [FacebookConstants::URL_GRAPH, FacebookConstants::PATH_PAGE_TABS],
-            ['pageId' => $this->getPageId()],
-            ['access_token' => $this->getAccessToken()]
-        );
+        $placeholders = ['page_id' => $this->getPageId()];
+        $queryParams = ['access_token' => $this->getAccessToken()];
+        $path = FacebookRequests::buildPath(FacebookConstants::PATH_PAGE_TABS, $placeholders, $queryParams);
 
-        // tab params
-        $params = [
+        $response = FacebookRequests::delete($path, [
             'tab' => 'app_' . $this->getFacebookApps()->getId(),
-        ];
-
-        $response = FacebookRequests::delete($url, $params);
+        ]);
 
         if (empty($response['success']) === false)
         {
@@ -304,7 +233,7 @@ class FacebookPages
     /**
      * @return FacebookApps
      */
-    private function getFacebookApps()
+    private function getFacebookApps(): FacebookApps
     {
         return $this->facebookApps;
     }
@@ -312,16 +241,20 @@ class FacebookPages
     /**
      * @return FacebookPosts
      */
-    private function getFacebookPosts()
+    private function getFacebookPosts(): FacebookPosts
     {
-        return $this->facebookPosts;
+        return Instances::cache(
+            InstanceData::create(FacebookPosts::class)
+        );
     }
 
     /**
      * @return FacebookPhotos
      */
-    private function getFacebookPhotos()
+    private function getFacebookPhotos(): FacebookPhotos
     {
-        return $this->facebookPhotos;
+        return Instances::cache(
+            InstanceData::create(FacebookPhotos::class)
+        );
     }
 }
