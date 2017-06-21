@@ -63,20 +63,14 @@ class FacebookRequests
      */
     public static function buildPath(string $path, array $placeholders = [], array $queryParams = []): string
     {
-        if (!empty($placeholders))
-        {
-            foreach ($placeholders as $key => $val)
-            {
-                $path = str_replace('{' . $key . '}', $val, $path);
-            }
-        }
+        $url = (new Url())->withPath($path, $placeholders);
 
         if (!empty($queryParams))
         {
-            $path = (new Url($path))->withQueryParams($queryParams)->__toString();
+            $url->withQueryParams($queryParams);
         }
 
-        return $path;
+        return $url->__toString();
     }
 
     /**
