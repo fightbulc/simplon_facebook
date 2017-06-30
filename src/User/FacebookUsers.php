@@ -126,7 +126,7 @@ class FacebookUsers
         $response = FacebookRequests::get(FacebookConstants::PATH_OAUTH_ACCESSTOKEN, [
             'client_id'     => $this->getFacebookApps()->getId(),
             'client_secret' => $this->getFacebookApps()->getSecret(),
-            'redirect_uri'  => trim($oauthUriRedirect, '/') . '/',
+            'redirect_uri'  => trim($oauthUriRedirect, '/'),
             'code'          => $code,
         ]);
 
