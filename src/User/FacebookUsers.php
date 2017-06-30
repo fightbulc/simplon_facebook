@@ -102,7 +102,7 @@ class FacebookUsers
         return FacebookRequests::buildFacebookUrl(
             FacebookRequests::buildPath(FacebookConstants::PATH_OAUTH, [], [
                 'client_id'     => $this->getFacebookApps()->getId(),
-                'redirect_uri'  => trim($uriRedirect, '/') . '/',
+                'redirect_uri'  => trim($uriRedirect, '/'),
                 'response_type' => $responseType,
                 'scope'         => $scope,
                 'auth_type'     => 'rerequest', // re-request revoked permissions
