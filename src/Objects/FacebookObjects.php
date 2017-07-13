@@ -50,7 +50,7 @@ class FacebookObjects
 
         if (isset($response['id']))
         {
-            return (new ObjectData())->fromArray($response);
+            return new ObjectData($response);
         }
 
         return null;
@@ -81,10 +81,10 @@ class FacebookObjects
     /**
      * @param string $object
      *
-     * @return ObjectData
+     * @return null|ObjectData
      * @throws FacebookException
      */
-    protected function crawl(string $object): ObjectData
+    protected function crawl(string $object): ?ObjectData
     {
         $placeholders = [];
 
@@ -98,6 +98,11 @@ class FacebookObjects
             FacebookRequests::buildPath(FacebookConstants::PATH_OBJECT, $placeholders, $queryParams)
         );
 
-        return (new ObjectData())->fromArray($response);
+        if (isset($response['id']))
+        {
+            return new ObjectData($response);
+        }
+
+        return null;
     }
 }
