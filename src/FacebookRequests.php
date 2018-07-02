@@ -13,7 +13,7 @@ class FacebookRequests
 {
     /**
      * @param string $path
-     * @param array $params
+     * @param array  $params
      *
      * @return array
      * @throws FacebookException
@@ -22,13 +22,13 @@ class FacebookRequests
     public static function get(string $path, array $params = []): array
     {
         return self::handleResponse(
-            (new Request())->get(self::buildGraphUrl($path), $params)
+            (new Request())->get(self::buildGraphUrl($path), self::enrichPayloadWithAppSecretProof($params))
         );
     }
 
     /**
      * @param string $path
-     * @param array $params
+     * @param array  $params
      *
      * @return array
      * @throws FacebookException
@@ -36,13 +36,13 @@ class FacebookRequests
     public static function post(string $path, array $params = []): array
     {
         return self::handleResponse(
-            (new Request())->post(self::buildGraphUrl($path), $params)
+            (new Request())->post(self::buildGraphUrl($path), self::enrichPayloadWithAppSecretProof($params))
         );
     }
 
     /**
      * @param string $path
-     * @param array $params
+     * @param array  $params
      *
      * @return array
      * @throws FacebookException
@@ -50,14 +50,14 @@ class FacebookRequests
     public static function delete(string $path, array $params = []): array
     {
         return self::handleResponse(
-            (new Request())->delete(self::buildGraphUrl($path), $params)
+            (new Request())->delete(self::buildGraphUrl($path), self::enrichPayloadWithAppSecretProof($params))
         );
     }
 
     /**
      * @param string $path
-     * @param array $placeholders
-     * @param array $queryParams
+     * @param array  $placeholders
+     * @param array  $queryParams
      *
      * @return string
      */
@@ -67,7 +67,9 @@ class FacebookRequests
 
         if (!empty($queryParams))
         {
-            $url->withQueryParams($queryParams);
+            $url->withQueryParams(
+                self::enrichPayloadWithAppSecretProof($queryParams)
+            );
         }
 
         return $url->__toString();
@@ -94,6 +96,24 @@ class FacebookRequests
     public static function buildFacebookUrl(string $path): Url
     {
         return (new Url(FacebookConstants::URL_FACEBOOK))->withTrailPath($path);
+    }
+
+    /**
+     * @param array $params
+     *
+     * @return array
+     */
+    private static function enrichPayloadWithAppSecretProof(array $params): array
+    {
+        if (isset($params['access_token']) && isset($params['app_secret']))
+        {
+            $params['appsecret_proof'] = hash_hmac('sha256', $params['access_token'], $params['app_secret']);
+
+            // remove app_secret so that we dont send it along
+            unset($params['app_secret']);
+        }
+
+        return $params;
     }
 
     /**
