@@ -211,7 +211,7 @@ class FacebookUsers
      * @throws FacebookException
      * @throws RequestException
      */
-    public function getUserData(): UserData
+    public function getPublicUserData(): UserData
     {
         // fetch default fields:
         // https://developers.facebook.com/docs/facebook-login/permissions#reference-default_fields
@@ -224,7 +224,29 @@ class FacebookUsers
 
         return (new UserData($response))
             ->setAccessToken($this->getAccessToken())
-            ->setAppSecret($this->app->getSecret());
+            ->setAppSecret($this->app->getSecret())
+            ;
+    }
+
+    /**
+     * @param array $fields
+     *
+     * @return array
+     * @throws FacebookException
+     * @throws RequestException
+     */
+    public function getCustomUserData(array $fields): array
+    {
+        // fetch default fields:
+        // https://developers.facebook.com/docs/facebook-login/permissions#reference-default_fields
+
+        $response = FacebookRequests::get(FacebookConstants::PATH_ME, [
+            'access_token' => $this->getAccessToken(),
+            'app_secret'   => $this->app->getSecret(),
+            'fields'       => implode(',', $fields),
+        ]);
+
+        return $response;
     }
 
     /**
