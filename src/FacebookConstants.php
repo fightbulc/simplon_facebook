@@ -38,7 +38,7 @@ class FacebookConstants
     /**
      * @var string
      */
-    private static $version = '2.9';
+    private static $version = '3.0';
 
     /**
      * @param string $version

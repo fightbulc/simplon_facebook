@@ -29,6 +29,7 @@ class PhotoCreateData extends Data
      */
     public function __construct(string $url, ?string $caption = null, bool $noStory = false)
     {
+        parent::__construct();
         $this->url = $url;
         $this->caption = $caption;
         $this->noStory = $noStory;

@@ -2,6 +2,7 @@
 
 namespace Simplon\Facebook\Post;
 
+use Simplon\Facebook\App\FacebookApps;
 use Simplon\Facebook\FacebookConstants;
 use Simplon\Facebook\FacebookException;
 use Simplon\Facebook\FacebookRequests;
@@ -15,8 +16,21 @@ use Simplon\Helper\CastAway;
 class FacebookPosts
 {
     /**
-     * @param string $accessToken
-     * @param string $edgeId
+     * @var FacebookApps
+     */
+    private $app;
+
+    /**
+     * @param FacebookApps $app
+     */
+    public function __construct(FacebookApps $app)
+    {
+        $this->app = $app;
+    }
+
+    /**
+     * @param string   $accessToken
+     * @param string   $edgeId
      * @param PostData $facebookPostData
      *
      * @return string
@@ -25,7 +39,12 @@ class FacebookPosts
     public function create(string $accessToken, string $edgeId, PostData $facebookPostData): string
     {
         $placeholders = ['edge_id' => $edgeId];
-        $queryParams = ['access_token' => $accessToken];
+
+        $queryParams = [
+            'access_token' => $accessToken,
+            'app_secret'   => $this->app->getSecret(),
+        ];
+
         $path = FacebookRequests::buildPath(FacebookConstants::PATH_POST_EDGE, $placeholders, $queryParams);
 
         $response = FacebookRequests::post($path, $facebookPostData->toArray());
@@ -39,8 +58,8 @@ class FacebookPosts
     }
 
     /**
-     * @param string $accessToken
-     * @param string $id
+     * @param string     $accessToken
+     * @param string     $id
      * @param array|null $fields
      *
      * @return PostData|PhotoData
@@ -50,7 +69,12 @@ class FacebookPosts
     public function read(string $accessToken, string $id, ?array $fields = null)
     {
         $placeholders = ['id' => $id];
-        $queryParams = ['access_token' => $accessToken, 'metadata' => 1];
+
+        $queryParams = [
+            'access_token' => $accessToken,
+            'app_secret'   => $this->app->getSecret(),
+            'metadata'     => 1,
+        ];
 
         if ($fields)
         {
@@ -72,7 +96,7 @@ class FacebookPosts
     }
 
     /**
-     * @param string $accessToken
+     * @param string   $accessToken
      * @param PostData $facebookPostData
      *
      * @return bool
@@ -81,7 +105,12 @@ class FacebookPosts
     public function update(string $accessToken, PostData $facebookPostData): bool
     {
         $placeholders = ['id' => $facebookPostData->getId()];
-        $queryParams = ['access_token' => $accessToken];
+
+        $queryParams = [
+            'access_token' => $accessToken,
+            'app_secret'   => $this->app->getSecret(),
+        ];
+
         $path = FacebookRequests::buildPath(FacebookConstants::PATH_GRAPH_ITEM, $placeholders, $queryParams);
 
         $response = FacebookRequests::post($path, $facebookPostData->toArray());
@@ -104,7 +133,11 @@ class FacebookPosts
     public function delete(string $accessToken, string $postId): bool
     {
         $placeholders = ['id' => $postId];
-        $queryParams = ['access_token' => $accessToken];
+
+        $queryParams = [
+            'access_token' => $accessToken,
+            'app_secret'   => $this->app->getSecret(),
+        ];
 
         $response = FacebookRequests::delete(
             FacebookRequests::buildPath(FacebookConstants::PATH_GRAPH_ITEM, $placeholders, $queryParams)

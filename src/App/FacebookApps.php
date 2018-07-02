@@ -130,7 +130,7 @@ class FacebookApps
 
     /**
      * @param string $endpoint
-     * @param array $params
+     * @param array  $params
      * @param string $requestType
      *
      * @return array
@@ -148,7 +148,7 @@ class FacebookApps
 
     /**
      * @param string $type
-     * @param array $object
+     * @param array  $object
      *
      * @return string
      * @throws FacebookException
@@ -163,7 +163,12 @@ class FacebookApps
         }
 
         $placeholders = ['object_type' => $type];
-        $queryParams = ['access_token' => $this->getAppAccessToken()];
+
+        $queryParams = [
+            'access_token' => $this->getAppAccessToken(),
+            'app_secret'   => $this->getSecret(),
+        ];
+
         $path = FacebookRequests::buildPath(FacebookConstants::PATH_APP_STORY_OBJECT_CREATE, $placeholders, $queryParams);
 
         $response = FacebookRequests::post($path, [
@@ -188,7 +193,12 @@ class FacebookApps
     public function storyObjectGet(string $objectId): array
     {
         $placeholders = ['id' => $objectId];
-        $queryParams = ['access_token' => $this->getAppAccessToken()];
+
+        $queryParams = [
+            'access_token' => $this->getAppAccessToken(),
+            'app_secret'   => $this->getSecret(),
+        ];
+
         $path = FacebookRequests::buildPath(FacebookConstants::PATH_GRAPH_ITEM, $placeholders, $queryParams);
 
         $response = FacebookRequests::get($path);
@@ -205,7 +215,12 @@ class FacebookApps
     public function storyObjectDelete(string $objectId): bool
     {
         $placeholders = ['id' => $objectId];
-        $queryParams = ['access_token' => $this->getAppAccessToken()];
+
+        $queryParams = [
+            'access_token' => $this->getAppAccessToken(),
+            'app_secret'   => $this->getSecret(),
+        ];
+
         $path = FacebookRequests::buildPath(FacebookConstants::PATH_GRAPH_ITEM, $placeholders, $queryParams);
 
         $response = FacebookRequests::delete($path);
@@ -226,7 +241,8 @@ class FacebookApps
      */
     public function parseSignedRequest(string $signedRequest): SignedRequestData
     {
-        $base64Decode = function ($input) {
+        $base64Decode = function ($input)
+        {
             return base64_decode(strtr($input, '-_', '+/'));
         };
 
@@ -249,7 +265,7 @@ class FacebookApps
 
     /**
      * @param string $accessToken
-     * @param bool $refresh
+     * @param bool   $refresh
      *
      * @return DebugTokenData
      * @throws FacebookException
@@ -277,6 +293,7 @@ class FacebookApps
         $response = FacebookRequests::get(FacebookConstants::PATH_DEBUG_TOKEN, [
             'input_token'  => $inputToken,
             'access_token' => $this->getAppAccessToken(),
+            'app_secret'   => $this->getSecret(),
         ]);
 
         if (empty($response['data']) === false)

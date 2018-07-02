@@ -2,9 +2,11 @@
 
 namespace Simplon\Facebook\Event;
 
+use Simplon\Facebook\App\FacebookApps;
 use Simplon\Facebook\FacebookConstants;
 use Simplon\Facebook\FacebookException;
 use Simplon\Facebook\FacebookRequests;
+use Simplon\Request\RequestException;
 
 /**
  * @package Simplon\Facebook\Event
@@ -12,19 +14,34 @@ use Simplon\Facebook\FacebookRequests;
 class FacebookEvents
 {
     /**
-     * @param $accessToken
-     * @param $eventId
-     * @param array $fields
+     * @var FacebookApps;
+     */
+    private $app;
+
+    /**
+     * @param FacebookApps $app
+     */
+    public function __construct(FacebookApps $app)
+    {
+        $this->app = $app;
+    }
+
+    /**
+     * @param string $accessToken
+     * @param string $eventId
+     * @param array  $fields
      *
      * @return array
      * @throws FacebookException
-     * @throws \Simplon\Request\RequestException
+     * @throws RequestException
      */
-    public function read($accessToken, $eventId, array $fields = ['id', 'name', 'description', 'cover'])
+    public function read(string $accessToken, string $eventId, array $fields = ['id', 'name', 'description', 'cover']): array
     {
         $placeholders = ['id' => $eventId];
+
         $queryParams = [
             'access_token' => $accessToken,
+            'app_secret'   => $this->app->getSecret(),
             'fields'       => join(',', $fields),
         ];
 

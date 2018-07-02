@@ -27,7 +27,7 @@ class FacebookObjects
     }
 
     /**
-     * @param string $id
+     * @param string     $id
      * @param array|null $fields
      *
      * @return null|ObjectData
@@ -39,6 +39,7 @@ class FacebookObjects
         $queryParams = [
             'id'           => $id,
             'access_token' => $this->app->getAppAccessToken(),
+            'app_secret'   => $this->app->getSecret(),
         ];
 
         if ($fields)
@@ -92,6 +93,7 @@ class FacebookObjects
             'id'           => $object,
             'scrape'       => true,
             'access_token' => $this->app->getAppAccessToken(),
+            'app_secret'   => $this->app->getSecret(),
         ];
 
         $response = FacebookRequests::post(

@@ -7,10 +7,10 @@ use Simplon\Facebook\FacebookConstants;
 use Simplon\Facebook\FacebookException;
 use Simplon\Facebook\FacebookRequests;
 use Simplon\Facebook\Page\Data\PageData;
+use Simplon\Facebook\Photo\Data\PhotoCreateData;
 use Simplon\Facebook\Photo\FacebookPhotos;
-use Simplon\Facebook\Photo\Data\PhotoData;
-use Simplon\Facebook\Post\FacebookPosts;
 use Simplon\Facebook\Post\Data\PostData;
+use Simplon\Facebook\Post\FacebookPosts;
 use Simplon\Helper\CastAway;
 use Simplon\Helper\Data\InstanceData;
 use Simplon\Helper\Instances;
@@ -23,7 +23,7 @@ class FacebookPages
     /**
      * @var FacebookApps
      */
-    private $facebookApps;
+    private $app;
     /**
      * @var string
      */
@@ -34,11 +34,11 @@ class FacebookPages
     private $pageId;
 
     /**
-     * @param FacebookApps $facebookApps
+     * @param FacebookApps $app
      */
-    public function __construct(FacebookApps $facebookApps)
+    public function __construct(FacebookApps $app)
     {
-        $this->facebookApps = $facebookApps;
+        $this->app = $app;
     }
 
     /**
@@ -119,7 +119,11 @@ class FacebookPages
     public function getPageData(): PageData
     {
         $placeholders = ['id' => $this->getPageId()];
-        $queryParams = ['access_token' => $this->getAccessToken()];
+
+        $queryParams = [
+            'access_token' => $this->getAccessToken(),
+            'app_secret'   => $this->app->getSecret(),
+        ];
 
         $response = FacebookRequests::get(
             FacebookRequests::buildPath(FacebookConstants::PATH_GRAPH_ITEM, $placeholders, $queryParams)
@@ -162,14 +166,14 @@ class FacebookPages
     }
 
     /**
-     * @param PhotoData $facebookPhotoVo
+     * @param PhotoCreateData $photo
      *
      * @return null|string
      * @throws FacebookException
      */
-    public function photoCreate(PhotoData $facebookPhotoVo): ?string
+    public function photoCreate(PhotoCreateData $photo): ?string
     {
-        return $this->getFacebookPhotos()->create($this->getAccessToken(), $this->getPageId(), $facebookPhotoVo);
+        return $this->getFacebookPhotos()->create($this->getAccessToken(), $this->getPageId(), $photo);
     }
 
     /**
@@ -192,7 +196,12 @@ class FacebookPages
     public function addTab(?int $position = null): bool
     {
         $placeholders = ['page_id' => $this->getPageId()];
-        $queryParams = ['access_token' => $this->getAccessToken()];
+
+        $queryParams = [
+            'access_token' => $this->getAccessToken(),
+            'app_secret'   => $this->app->getSecret(),
+        ];
+
         $path = FacebookRequests::buildPath(FacebookConstants::PATH_PAGE_TABS, $placeholders, $queryParams);
 
         $response = FacebookRequests::post($path, [
@@ -215,7 +224,12 @@ class FacebookPages
     public function removeTab(): bool
     {
         $placeholders = ['page_id' => $this->getPageId()];
-        $queryParams = ['access_token' => $this->getAccessToken()];
+
+        $queryParams = [
+            'access_token' => $this->getAccessToken(),
+            'app_secret'   => $this->app->getSecret(),
+        ];
+
         $path = FacebookRequests::buildPath(FacebookConstants::PATH_PAGE_TABS, $placeholders, $queryParams);
 
         $response = FacebookRequests::delete($path, [
@@ -235,7 +249,7 @@ class FacebookPages
      */
     private function getFacebookApps(): FacebookApps
     {
-        return $this->facebookApps;
+        return $this->app;
     }
 
     /**

@@ -79,6 +79,7 @@ class PostData extends Data
      */
     public function __construct(?string $message = null)
     {
+        parent::__construct();
         $this->message = $message;
     }
 

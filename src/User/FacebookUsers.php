@@ -19,6 +19,7 @@ use Simplon\Facebook\User\Data\UserFriendData;
 use Simplon\Helper\CastAway;
 use Simplon\Helper\Data\InstanceData;
 use Simplon\Helper\Instances;
+use Simplon\Request\RequestException;
 
 /**
  * @package Simplon\Facebook\User
@@ -28,7 +29,7 @@ class FacebookUsers
     /**
      * @var FacebookApps
      */
-    private $facebookApps;
+    private $app;
     /**
      * @var string
      */
@@ -39,11 +40,11 @@ class FacebookUsers
     private $userId;
 
     /**
-     * @param FacebookApps $facebookApps
+     * @param FacebookApps $app
      */
-    public function __construct(FacebookApps $facebookApps)
+    public function __construct(FacebookApps $app)
     {
-        $this->facebookApps = $facebookApps;
+        $this->app = $app;
     }
 
     /**
@@ -64,7 +65,7 @@ class FacebookUsers
      *
      * @return FacebookUsers
      * @throws FacebookException
-     * @throws \Simplon\Request\RequestException
+     * @throws RequestException
      */
     public function setAccessToken(string $accessToken): self
     {
@@ -92,7 +93,7 @@ class FacebookUsers
      * @see https://developers.facebook.com/docs/facebook-login/permissions#reference
      *
      * @param string $uriRedirect
-     * @param array $scope
+     * @param array  $scope
      * @param string $responseType
      *
      * @return string
@@ -116,7 +117,7 @@ class FacebookUsers
      *
      * @return FacebookUsers
      * @throws FacebookException
-     * @throws \Simplon\Request\RequestException
+     * @throws RequestException
      */
     public function requestAccessTokenByCode(string $code, string $oauthUriRedirect): self
     {
@@ -141,12 +142,13 @@ class FacebookUsers
     /**
      * @return array
      * @throws FacebookException
-     * @throws \Simplon\Request\RequestException
+     * @throws RequestException
      */
     public function getPermissions(): array
     {
         $response = FacebookRequests::get(FacebookConstants::PATH_ME_PERMISSIONS, [
             'access_token' => $this->getAccessToken(),
+            'app_secret'   => $this->app->getSecret(),
         ]);
 
         if (empty($response['data']) === false)
@@ -160,7 +162,7 @@ class FacebookUsers
     /**
      * @return bool
      * @throws FacebookException
-     * @throws \Simplon\Request\RequestException
+     * @throws RequestException
      */
     public function isShortTermAccessToken(): bool
     {
@@ -170,7 +172,7 @@ class FacebookUsers
     /**
      * @return FacebookUsers
      * @throws FacebookException
-     * @throws \Simplon\Request\RequestException
+     * @throws RequestException
      */
     public function getLongTermAccessToken(): self
     {
@@ -185,7 +187,7 @@ class FacebookUsers
     /**
      * @return FacebookUsers
      * @throws FacebookException
-     * @throws \Simplon\Request\RequestException
+     * @throws RequestException
      */
     public function requestLongTermAccessToken(): self
     {
@@ -207,32 +209,40 @@ class FacebookUsers
     /**
      * @return UserData
      * @throws FacebookException
-     * @throws \Simplon\Request\RequestException
+     * @throws RequestException
      */
     public function getUserData(): UserData
     {
+        // fetch default fields:
+        // https://developers.facebook.com/docs/facebook-login/permissions#reference-default_fields
+
         $response = FacebookRequests::get(FacebookConstants::PATH_ME, [
             'access_token' => $this->getAccessToken(),
-            'fields'       => 'id,name,first_name,middle_name,last_name,email,age_range,locale,location,timezone,gender,link',
+            'app_secret'   => $this->app->getSecret(),
+            'fields'       => 'id,first_name,middle_name,last_name,name',
         ]);
 
-        return (new UserData())->fromArray($response)->setAccessToken($this->getAccessToken());
+        return (new UserData($response))
+            ->setAccessToken($this->getAccessToken())
+            ->setAppSecret($this->app->getSecret());
     }
 
     /**
      * @return UserFriendData[]
      * @throws FacebookException
-     * @throws \Simplon\Request\RequestException
+     * @throws RequestException
      */
     public function getFriends(): array
     {
         $response = FacebookRequests::get(FacebookConstants::PATH_ME_FRIENDS, [
             'access_token' => $this->getAccessToken(),
+            'app_secret'   => $this->app->getSecret(),
         ]);
 
         if (empty($response['data']) === false)
         {
-            $map = function ($data) {
+            $map = function ($data)
+            {
                 return (new UserFriendData())->fromArray($data);
             };
 
@@ -248,19 +258,21 @@ class FacebookUsers
      *
      * @return UserAccountData[]|null
      * @throws FacebookException
-     * @throws \Simplon\Request\RequestException
+     * @throws RequestException
      */
     public function getAccountsData(): ?array
     {
         $params = [
             'access_token' => $this->getAccessToken(),
+            'app_secret'   => $this->app->getSecret(),
         ];
 
         $response = FacebookRequests::get(FacebookConstants::PATH_ME_ACCOUNTS, $params);
 
         if (empty($response['data']) === false)
         {
-            $map = function ($data) {
+            $map = function ($data)
+            {
                 return (new UserAccountData())->fromArray($data);
             };
 
@@ -289,7 +301,12 @@ class FacebookUsers
         }
 
         $placeholders = ['action_type' => $actionType];
-        $queryParams = ['access_token' => $this->getAccessToken()];
+
+        $queryParams = [
+            'access_token' => $this->getAccessToken(),
+            'app_secret'   => $this->app->getSecret(),
+        ];
+
         $path = FacebookRequests::buildPath(FacebookConstants::PATH_ME_STORY_CREATE, $placeholders, $queryParams);
 
         $response = FacebookRequests::post($path, [
@@ -313,7 +330,12 @@ class FacebookUsers
     public function storyDelete(string $storyId): bool
     {
         $placeholders = ['id' => $storyId];
-        $queryParams = ['access_token' => $this->getAccessToken()];
+
+        $queryParams = [
+            'access_token' => $this->getAccessToken(),
+            'app_secret'   => $this->app->getSecret(),
+        ];
+
         $path = FacebookRequests::buildPath(FacebookConstants::PATH_GRAPH_ITEM, $placeholders, $queryParams);
 
         $response = FacebookRequests::delete($path);
@@ -338,12 +360,12 @@ class FacebookUsers
     }
 
     /**
-     * @param string $id
+     * @param string     $id
      * @param array|null $fields
      *
      * @return PostData|PhotoData
      * @throws FacebookException
-     * @throws \Simplon\Request\RequestException
+     * @throws RequestException
      */
     public function feedRead(string $id, ?array $fields = null)
     {
@@ -399,7 +421,7 @@ class FacebookUsers
      */
     private function getFacebookApps(): FacebookApps
     {
-        return $this->facebookApps;
+        return $this->app;
     }
 
     /**

@@ -64,6 +64,7 @@ class PhotoData extends Data
      */
     public function __construct(?string $link = null)
     {
+        parent::__construct();
         $this->link = $link;
     }
 

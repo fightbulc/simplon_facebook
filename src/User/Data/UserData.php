@@ -2,6 +2,7 @@
 
 namespace Simplon\Facebook\User\Data;
 
+use Simplon\Facebook\FacebookRequests;
 use Simplon\Helper\Data\Data;
 
 /**
@@ -10,21 +11,17 @@ use Simplon\Helper\Data\Data;
 class UserData extends Data
 {
     /**
-     * @var array
-     */
-    protected $data;
-    /**
      * @var string
      */
     protected $accessToken;
     /**
      * @var string
      */
-    protected $id;
+    protected $appSecret;
     /**
      * @var string
      */
-    protected $username;
+    protected $id;
     /**
      * @var string
      */
@@ -41,46 +38,6 @@ class UserData extends Data
      * @var string
      */
     protected $name;
-    /**
-     * @var string
-     */
-    protected $email;
-    /**
-     * @var string
-     */
-    protected $locale;
-    /**
-     * @var string
-     */
-    protected $location;
-    /**
-     * @var string
-     */
-    protected $gender;
-    /**
-     * @var array
-     */
-    protected $ageRange;
-    /**
-     * @var string
-     */
-    protected $link;
-    /**
-     * @var string
-     */
-    protected $birthday;
-    /**
-     * @var string
-     */
-    protected $updatedAt;
-    /**
-     * @var int
-     */
-    protected $timezone;
-    /**
-     * @var bool
-     */
-    protected $verified;
 
     /**
      * @param string $accessToken
@@ -90,9 +47,6 @@ class UserData extends Data
     public function setAccessToken($accessToken)
     {
         $this->accessToken = $accessToken;
-
-        // cache in raw data
-        $this->data['access_token'] = $accessToken;
 
         return $this;
     }
@@ -106,23 +60,23 @@ class UserData extends Data
     }
 
     /**
-     * @param string $email
-     *
-     * @return UserData
+     * @return string
      */
-    public function setEmail($email)
+    public function getAppSecret(): string
     {
-        $this->email = $email;
-
-        return $this;
+        return $this->appSecret;
     }
 
     /**
-     * @return string
+     * @param string $appSecret
+     *
+     * @return UserData
      */
-    public function getEmail()
+    public function setAppSecret(string $appSecret): UserData
     {
-        return (string)$this->email;
+        $this->appSecret = $appSecret;
+
+        return $this;
     }
 
     /**
@@ -186,26 +140,6 @@ class UserData extends Data
     }
 
     /**
-     * @param string $gender
-     *
-     * @return UserData
-     */
-    public function setGender($gender)
-    {
-        $this->gender = $gender;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getGender()
-    {
-        return (string)$this->gender;
-    }
-
-    /**
      * @param string $id
      *
      * @return UserData
@@ -246,228 +180,37 @@ class UserData extends Data
     }
 
     /**
-     * @param string $locale
+     * @param int $width
+     * @param int $height
      *
-     * @return UserData
-     */
-    public function setLocale($locale)
-    {
-        $this->locale = $locale;
-
-        return $this;
-    }
-
-    /**
      * @return string
      */
-    public function getLocale()
+    public function getPictureUrl(int $width = 400, int $height = 400): string
     {
-        return (string)$this->locale;
+        $params = [
+            'access_token' => $this->getAccessToken(),
+            'app_secret'   => $this->getAppSecret(),
+            'width'        => $width,
+            'height'       => $height,
+        ];
+
+        return FacebookRequests::buildGraphUrl(
+            FacebookRequests::buildPath('/{id}/picture', ['id' => $this->getId()], $params)
+        );
     }
 
     /**
-     * @param string $urlProfile
+     * @param bool $snakeCase
+     * @param int  $width
+     * @param int  $height
      *
-     * @return UserData
-     */
-    public function setLink($urlProfile)
-    {
-        $this->link = $urlProfile;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getLink()
-    {
-        return (string)$this->link;
-    }
-
-    /**
-     * @param int $timezone
-     *
-     * @return UserData
-     */
-    public function setTimezone($timezone)
-    {
-        $this->timezone = $timezone;
-
-        return $this;
-    }
-
-    /**
-     * @return int
-     */
-    public function getTimezone()
-    {
-        return (int)$this->timezone;
-    }
-
-    /**
-     * @param string $updatedTime
-     *
-     * @return UserData
-     */
-    public function setUpdatedAt($updatedTime)
-    {
-        $this->updatedAt = $updatedTime;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getUpdatedAt()
-    {
-        return (string)$this->updatedAt;
-    }
-
-    /**
-     * @param string $username
-     *
-     * @return UserData
-     */
-    public function setUsername($username)
-    {
-        $this->username = $username;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getUsername()
-    {
-        return (string)$this->username;
-    }
-
-    /**
-     * @param string $verified
-     *
-     * @return UserData
-     */
-    public function setVerified($verified)
-    {
-        $this->verified = $verified;
-
-        return $this;
-    }
-
-    /**
-     * @return bool
-     */
-    public function getVerified()
-    {
-        return (bool)$this->verified;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isVerified()
-    {
-        return $this->getVerified() === true;
-    }
-
-    /**
-     * @param string $rawData
-     *
-     * @return UserData
-     */
-    protected function setRawData($rawData)
-    {
-        $this->data = $rawData;
-
-        return $this;
-    }
-
-    /**
      * @return array
      */
-    public function getAgeRange()
+    public function toArray(bool $snakeCase = true, int $width = 400, int $height = 400): array
     {
-        return $this->ageRange;
-    }
+        $data = parent::toArray($snakeCase);
+        $data['picture_url'] = $this->getPictureUrl($width, $height);
 
-    /**
-     * @return int|null
-     */
-    public function getAgeRangeMin()
-    {
-        if (isset($this->ageRange['min']))
-        {
-            return (int)$this->ageRange['min'];
-        }
-
-        return null;
-    }
-
-    /**
-     * @return int|null
-     */
-    public function getAgeRangeMax()
-    {
-        if (isset($this->ageRange['max']))
-        {
-            return (int)$this->ageRange['max'];
-        }
-
-        return null;
-    }
-
-    /**
-     * @param array $ageRange
-     *
-     * @return UserData
-     */
-    public function setAgeRange($ageRange)
-    {
-        $this->ageRange = $ageRange;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getLocation()
-    {
-        return $this->location;
-    }
-
-    /**
-     * @param string $location
-     *
-     * @return UserData
-     */
-    public function setLocation($location)
-    {
-        $this->location = $location;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getBirthday()
-    {
-        return $this->birthday;
-    }
-
-    /**
-     * @param string $birthday
-     *
-     * @return UserData
-     */
-    public function setBirthday($birthday)
-    {
-        $this->birthday = $birthday;
-
-        return $this;
+        return $data;
     }
 }
