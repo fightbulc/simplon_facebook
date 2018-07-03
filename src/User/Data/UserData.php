@@ -2,7 +2,6 @@
 
 namespace Simplon\Facebook\User\Data;
 
-use Simplon\Facebook\FacebookRequests;
 use Simplon\Helper\Data\Data;
 
 /**
@@ -38,6 +37,10 @@ class UserData extends Data
      * @var string
      */
     protected $name;
+    /**
+     * @var array
+     */
+    protected $picture;
 
     /**
      * @param string $accessToken
@@ -180,37 +183,10 @@ class UserData extends Data
     }
 
     /**
-     * @param int $width
-     * @param int $height
-     *
-     * @return string
+     * @return null|string
      */
-    public function getPictureUrl(int $width = 400, int $height = 400): string
+    public function getPicture(): ?string
     {
-        $params = [
-            'access_token' => $this->getAccessToken(),
-            'app_secret'   => $this->getAppSecret(),
-            'width'        => $width,
-            'height'       => $height,
-        ];
-
-        return FacebookRequests::buildGraphUrl(
-            FacebookRequests::buildPath('/{id}/picture', ['id' => $this->getId()], $params)
-        );
-    }
-
-    /**
-     * @param bool $snakeCase
-     * @param int  $width
-     * @param int  $height
-     *
-     * @return array
-     */
-    public function toArray(bool $snakeCase = true, int $width = 400, int $height = 400): array
-    {
-        $data = parent::toArray($snakeCase);
-        $data['picture_url'] = $this->getPictureUrl($width, $height);
-
-        return $data;
+        return $this->picture['data']['url'] ?? null;
     }
 }

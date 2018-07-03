@@ -219,7 +219,7 @@ class FacebookUsers
         $response = FacebookRequests::get(FacebookConstants::PATH_ME, [
             'access_token' => $this->getAccessToken(),
             'app_secret'   => $this->app->getSecret(),
-            'fields'       => 'id,first_name,middle_name,last_name,name',
+            'fields'       => 'id,first_name,middle_name,last_name,name,picture.width(600)',
         ]);
 
         return (new UserData($response))
