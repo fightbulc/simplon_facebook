@@ -100,14 +100,31 @@ class FacebookUsers
      */
     public function getUrlAuthentication(string $uriRedirect, array $scope = [], string $responseType = 'code'): string
     {
+        $params = $this->getAuthenticationParams($uriRedirect, $responseType, $scope);
+
         return FacebookRequests::buildFacebookUrl(
-            FacebookRequests::buildPath(FacebookConstants::PATH_OAUTH, [], [
-                'client_id'     => $this->getFacebookApps()->getId(),
-                'redirect_uri'  => trim($uriRedirect, '/'),
-                'response_type' => $responseType,
-                'scope'         => $scope,
-                'auth_type'     => 'rerequest', // re-request revoked permissions
-            ])
+            FacebookRequests::buildPath(FacebookConstants::PATH_OAUTH, [], $params)
+        );
+    }
+
+    /**
+     * List of possible values for the scope:
+     * @see https://developers.facebook.com/docs/facebook-login/permissions#reference
+     *
+     * @param string      $uriRedirect
+     * @param array       $scope
+     * @param null|string $withState
+     * @param string      $responseType
+     *
+     * @return string
+     */
+    public function getUrlAuthenticationWithState(string $uriRedirect, string $withState, array $scope = [], string $responseType = 'code'): string
+    {
+        $params = $this->getAuthenticationParams($uriRedirect, $responseType, $scope);
+        $params['state'] = $withState;
+
+        return FacebookRequests::buildFacebookUrl(
+            FacebookRequests::buildPath(FacebookConstants::PATH_OAUTH, [], $params)
         );
     }
 
@@ -436,6 +453,24 @@ class FacebookUsers
     public function photoDelete(string $photoId): bool
     {
         return $this->getFacebookPhotos()->delete($this->getAccessToken(), $photoId);
+    }
+
+    /**
+     * @param string $uriRedirect
+     * @param string $responseType
+     * @param array  $scope
+     *
+     * @return array
+     */
+    private function getAuthenticationParams(string $uriRedirect, string $responseType, array $scope = []): array
+    {
+        return [
+            'client_id'     => $this->getFacebookApps()->getId(),
+            'redirect_uri'  => trim($uriRedirect, '/'),
+            'response_type' => $responseType,
+            'scope'         => $scope,
+            'auth_type'     => 'rerequest', // re-request revoked permissions
+        ];
     }
 
     /**
