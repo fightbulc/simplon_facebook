@@ -19,7 +19,7 @@
   "require": {
     "php": ">=7.1",
     "simplon/request": "^1.1",
-    "simplon/url": "^0.5",
+    "simplon/url": "^0.6",
     "simplon/helper": "^1.0",
     "dusank/knapsack": "^10.0"
   },
